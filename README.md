@@ -1,2 +1,3 @@
 # gilded-proboscis
-Computer Science
+Project name: Night Shift
+ICS 4U1
