@@ -4,11 +4,6 @@ import java.util.ArrayList;
 public class GamePanel extends JPanel {
 
 
-
-
-
-
-
     public int[][] mapGenerator() {
         int[][] maze;
         // dimensions of generated maze
