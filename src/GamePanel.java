@@ -1,8 +1,345 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-public class GamePanel extends JPanel {
 
+public class GamePanel extends JPanel implements Runnable{
+    private Thread thread;
+    public final int TILE_SIZE = 48;
+
+
+    Player player;
+
+    int[][] currentMap = mapGenerator();
+
+
+
+
+    public GamePanel(){
+        this.setFocusable(true);
+        this.setPreferredSize(new Dimension(600,600));
+        this.setBackground(new Color(0,0,0));
+        player = new Player(this, 0, 0, 0);
+        this.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_A){
+                    player.left = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    player.right = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_W){
+                    player.forward = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_S){
+                    player.backward = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                    player.turnRight = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                    player.turnLeft = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_UP){
+                    player.turnUp = true;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                    player.turnDown = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_A){
+                    player.left = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_D){
+                    player.right = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_W){
+                    player.forward = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_S){
+                    player.backward = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                    player.turnRight = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                    player.turnLeft = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_UP){
+                    player.turnUp = false;
+                }
+                if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                    player.turnDown = false;
+                }
+            }
+        });
+
+        int totalWalls = 0;
+        for(int i = 1; i < currentMap.length - 1; i++){
+            for(int j = 1; j < currentMap[i].length - 1; j++){
+                if(currentMap[i - 1][j] == 0 && currentMap[i - 1][j] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i + 1][j] == 0 && currentMap[i + 1][j] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i][j - 1] == 0 && currentMap[i][j - 1] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i][j + 1] == 0 && currentMap[i][j + 1] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+            }
+        }
+        totalWalls = 3 * totalWalls;
+        int wallCount = 0;
+        /*
+
+        for(int i = 1; i < currentMap.length - 1; i++){
+            for(int j = 1; j < currentMap[i].length - 1; j++){
+                if(currentMap[i - 1][j] == 0 && currentMap[i - 1][j] + currentMap[i][j] > 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(16 * i,-5);
+                    points[1] = new java.awt.Point(16 * i,-5);
+                    points[2] = new java.awt.Point(16 * i,12);
+                    points[3] = new java.awt.Point(16 * i,12);
+                    zValues = new int[]{16 * j, 16 * j + 16, 16 * j + 16, 16 * j};
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < zValues.length; k++){
+                        zValues[k] += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < zValues.length; k++){
+                        zValues[k] += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                }
+                if(currentMap[i + 1][j] == 0 && currentMap[i + 1][j] + currentMap[i][j] > 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(16 * i + 16,-5);
+                    points[1] = new java.awt.Point(16 * i + 16,-5);
+                    points[2] = new java.awt.Point(16 * i + 16,12);
+                    points[3] = new java.awt.Point(16 * i + 16,12);
+                    zValues = new int[]{16 * j, 16 * j + 16, 16 * j + 16, 16 * j};
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < zValues.length; k++){
+                        zValues[k] += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < zValues.length; k++){
+                        zValues[k] += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+
+                }
+                if(currentMap[i][j - 1] == 0 && currentMap[i][j - 1] + currentMap[i][j] > 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(16 * i,-5);
+                    points[1] = new java.awt.Point(16 * i + 16,-5);
+                    points[2] = new java.awt.Point(16 * i + 16,12);
+                    points[3] = new java.awt.Point(16 * i,12);
+                    zValues = new int[]{16 * j, 16 * j, 16 * j, 16 * j};
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < points.length; k++){
+                        points[k].x += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < points.length; k++){
+                        points[k].x += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+
+                }
+                if(currentMap[i][j + 1] == 0 && currentMap[i][j + 1] + currentMap[i][j] > 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(16 * i,-5);
+                    points[1] = new java.awt.Point(16 * i + 16,-5);
+                    points[2] = new java.awt.Point(16 * i + 16,12);
+                    points[3] = new java.awt.Point(16 * i,12);
+                    zValues = new int[]{16 * j + 16, 16 * j + 16, 16 * j + 16, 16 * j + 16};
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < points.length; k++){
+                        points[k].x += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+                    for(int k = 0; k < points.length; k++){
+                        points[k].x += 16;
+                    }
+                    wallOfCuebe[wallCount] = new Cube(points, zValues, this);
+                    wallCount++;
+
+                }
+            }
+        }
+
+         */
+
+/*
+        Point[] points = new Point[]{new Point(20 * (-1 + 1),0), new Point(20 * (0 + 1),0), new Point(20 * (0 + 1),20), new Point(20 * (-1 + 1),20)};
+        int[] zValues = new int[]{5 * (0 + 1), 5 * (0 + 1), 5 * (0 + 1), 5 * (0 + 1)};
+        testWall = new Wall(points, zValues, this);
+
+ */
+
+        startThread();
+    }
+
+
+    public void startThread(){
+        thread = new Thread(this);
+        thread.start();
+    }
+
+
+    public void paint(Graphics g){
+        super.paint(g);
+        Graphics2D g2d = (Graphics2D) g;
+        player.tileX = (int) (player.x / 48);
+        player.tileZ = (int) (player.z / 48);
+
+        //testCuebe.paint(g2d);
+        /*
+        ArrayList<Cube> printableWalls = new ArrayList<>();
+        for(int i = 0; i < wallOfCuebe.length; i++){
+            if(wallOfCuebe[i].calculateCentre().distance(0,0) < 25600) {
+                printableWalls.add(wallOfCuebe[i]);
+            }
+        }
+        Cube[] printedStuff = new Cube[printableWalls.size()];
+        printableWalls.toArray(printedStuff);
+        quickSort(printedStuff);
+        for(int i = printedStuff.length - 1; i >= 0; i--){
+            printedStuff[i].paint(g2d);
+        }
+
+         */
+
+
+        // testWall.paint(g2d);
+
+        g2d.dispose();
+
+
+    }
+
+    public static void quickSort(Entity[] arr)
+    {
+        quickSort(arr, 0, arr.length-1);
+    }
+
+    //Overloaded Quicksort used by the above method
+    private static void quickSort(Entity[] arr, int left, int right)
+    {
+        int index = partition(arr, left, right);
+        if (left < index - 1)
+            quickSort(arr, left, index - 1);
+        if (index < right)
+            quickSort(arr, index, right);
+    }
+
+    //Internal method that partitions the given array
+    private static int partition(Entity[] arr, int left, int right)
+    {
+        int i = left, j = right;
+        Entity tmp;
+        double pivot = ObjectPrinter.calculateCentre(arr[(left + right) / 2].points, arr[(left + right) / 2].distance).distance(0,0);
+        while (i <= j) {
+            while (ObjectPrinter.calculateCentre(arr[i].points, arr[i].distance).distance(0,0) < pivot)
+                i++;
+            while (ObjectPrinter.calculateCentre(arr[j].points, arr[j].distance).distance(0,0) < pivot)
+                j--;
+            if (i <= j) {
+                tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+                i++;
+                j--;
+            }
+        }
+        return i;
+    }
+
+
+
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(3);
+        frame.add(new GamePanel());
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+
+    @Override
+    public void run() {
+
+        double drawInterval = 1000000000.0/30;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+
+
+        while(thread != null){
+
+            currentTime = System.nanoTime();
+
+            delta += (currentTime - lastTime) / drawInterval;
+
+            lastTime = currentTime;
+
+            if(delta >= 1) {
+                // update the game
+                update();
+
+                // paint values regarding said update
+                repaint();
+
+                delta--;
+
+
+
+            }
+
+        }
+    }
+
+
+    public void update(){
+        player.updatePlayer();
+
+
+
+
+    }
 
     public int[][] mapGenerator() {
         int[][] maze;
@@ -128,13 +465,13 @@ public class GamePanel extends JPanel {
 
 
         // print final maze
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++)
-                System.out.print(maze[i][j]);
-            System.out.println();
-
-
-        }
+//        for (int i = 0; i < r; i++) {
+//            for (int j = 0; j < c; j++)
+//                System.out.print(maze[i][j]);
+//            System.out.println();
+//
+//
+//        }
         return maze;
     }
 
