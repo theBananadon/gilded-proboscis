@@ -2,18 +2,15 @@ import java.awt.*;
 
 public class ObjectPrinter {
 
-    Point[] points;
-    int[] distance;
-    Player player;
+    GamePanel gp;
+    static Player player;
 
-
-    public ObjectPrinter(Point[] points, int[] distance, Player player){
-        this.points = points;
-        this.distance = distance;
-        this.player = player;
+    public ObjectPrinter(GamePanel gp, Player player){
+        this.gp = gp;
+        ObjectPrinter.player = player;
     }
 
-    public double calculateCentre(){
+    public static Point calculateCentre(Point[] points, int[] distance){
         double xAvg = 0, yAvg = 0, zAvg = 0;
 
         int num = points.length;
@@ -23,10 +20,10 @@ public class ObjectPrinter {
             zAvg += Math.abs((player.z - distance[i]) / num);
         }
 
-        return xAvg * xAvg + yAvg * yAvg + zAvg * zAvg;
+        return new Point((int) xAvg, (int) zAvg);
     }
 
-    public Point[][] convertPoints(){
+    public static Point[][] convertPoints(Point[] points, int[] distance){
         Point[][] newPoints = new Point[4][2];
         double[] n = player.normal;
         double[] xAxis = player.xAxis;
@@ -34,8 +31,8 @@ public class ObjectPrinter {
         for(int i = 0; i < points.length; i++){
             double[] r_P = new double[]{points[i].x - player.x, points[i].y - player.y, distance[i] - player.z};
             double s = n[0] * r_P[0] + n[2] * r_P[2];
-            double x2 = 300 * ((xAxis[0] * r_P[0] + xAxis[2] * r_P[2]) / (1 + s / 20)) + 300;
-            double y2 = 300 * ((r_P[1]) / (1 + s / 20)) + 300;
+            double x2 = 75 * ((xAxis[0] * r_P[0] + xAxis[2] * r_P[2]) / (1 + s / 20)) + 300;
+            double y2 = 75 * ((r_P[1]) / (1 + s / 20)) + 300;
             newPoints[i][0] = new Point((int) x2, (int) y2);
             newPoints[i][1] = new Point((int) s, 1);
         }
@@ -43,9 +40,12 @@ public class ObjectPrinter {
         return newPoints;
     }
 
-    public boolean isDrawable(Point[][] points){
+    public static boolean isDrawable(Point[][] points){
+        if(points[1][0].y > points[2][0].y || points[0][0].y > points[3][0].y){
+            return false;
+        }
         for(int i = 0; i < points.length; i++){
-            if(points[i][1].x >= -16 && points[i][1].x <= 60){
+            if(points[i][1].x >= -20 && points[i][1].x <= 160){
                 return true;
             }
         }
@@ -53,8 +53,7 @@ public class ObjectPrinter {
         return false;
     }
 
-    public void paint(Graphics2D g2d){
-        Point[][] paintPoints = convertPoints();
+    public static void paint(Graphics2D g2d, Point[][] paintPoints){
         if(isDrawable(paintPoints)){
             int[] xPoints = new int[4];
             int[] yPoints = new int[4];
