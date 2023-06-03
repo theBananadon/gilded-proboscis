@@ -8,22 +8,18 @@ import java.util.ArrayList;
 public class GamePanel extends JPanel implements Runnable{
     private Thread thread;
     public final int TILE_SIZE = 48;
-
-
     Player player;
-
-    int[][] currentMap = mapGenerator();
-
-
+    public boolean startState = false, pauseState = false, playState = false;
+    public boolean allowEscape = false;
+    int[][] currentMap;
 
 
     public GamePanel(){
         this.setFocusable(true);
         this.setPreferredSize(new Dimension(600,600));
         this.setBackground(new Color(0,0,0));
-        player = new Player(this, 0, 0, 0);
+        getSprites();
         this.addKeyListener(new KeyListener() {
-
             @Override
             public void keyTyped(KeyEvent e) {
 
@@ -31,80 +27,96 @@ public class GamePanel extends JPanel implements Runnable{
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_A){
-                    player.left = true;
+                if(playState) {
+                    if (e.getKeyCode() == KeyEvent.VK_A) {
+                        player.left = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_D) {
+                        player.right = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_W) {
+                        player.forward = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_S) {
+                        player.backward = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                        player.turnRight = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                        player.turnLeft = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_UP) {
+                        player.turnUp = true;
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                        player.turnDown = true;
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                        playState = false;
+                        pauseState = true;
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_M){
+                        //insert Map method call
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_I){
+                        //insert Inventory method call
+                    }
                 }
-                if(e.getKeyCode() == KeyEvent.VK_D){
-                    player.right = true;
+                if(startState){
+                    if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                        startState = false;
+                        playState = true;
+                    }
                 }
-                if(e.getKeyCode() == KeyEvent.VK_W){
-                    player.forward = true;
+                if(pauseState && allowEscape){
+                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                        pauseState = false;
+                        startState = true;
+                        resetGame();
+                    }
                 }
-                if(e.getKeyCode() == KeyEvent.VK_S){
-                    player.backward = true;
-                }
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-                    player.turnRight = true;
-                }
-                if(e.getKeyCode() == KeyEvent.VK_LEFT){
-                    player.turnLeft = true;
-                }
-                if(e.getKeyCode() == KeyEvent.VK_UP){
-                    player.turnUp = true;
-                }
-                if(e.getKeyCode() == KeyEvent.VK_DOWN){
-                    player.turnDown = true;
-                }
+
+
+
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_A){
+            if(playState) {
+                if (e.getKeyCode() == KeyEvent.VK_A) {
                     player.left = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_D){
+                if (e.getKeyCode() == KeyEvent.VK_D) {
                     player.right = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_W){
+                if (e.getKeyCode() == KeyEvent.VK_W) {
                     player.forward = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_S){
+                if (e.getKeyCode() == KeyEvent.VK_S) {
                     player.backward = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     player.turnRight = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     player.turnLeft = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_UP){
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
                     player.turnUp = false;
                 }
-                if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     player.turnDown = false;
                 }
             }
-        });
-
-        int totalWalls = 0;
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
-                if(currentMap[i - 1][j] == 0 && currentMap[i - 1][j] + currentMap[i][j] > 0){
-                    totalWalls++;
-                }
-                if(currentMap[i + 1][j] == 0 && currentMap[i + 1][j] + currentMap[i][j] > 0){
-                    totalWalls++;
-                }
-                if(currentMap[i][j - 1] == 0 && currentMap[i][j - 1] + currentMap[i][j] > 0){
-                    totalWalls++;
-                }
-                if(currentMap[i][j + 1] == 0 && currentMap[i][j + 1] + currentMap[i][j] > 0){
-                    totalWalls++;
+            if(pauseState){
+                if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !allowEscape){
+                    allowEscape = true;
                 }
             }
-        }
-        totalWalls = 3 * totalWalls;
-        int wallCount = 0;
+            }
+        });
+
         /*
 
         for(int i = 1; i < currentMap.length - 1; i++){
@@ -208,11 +220,49 @@ public class GamePanel extends JPanel implements Runnable{
 
  */
 
-        startThread();
+        startGame();
+    }
+
+    private void resetGame() {
+
+    }
+
+    private void changeGameState() {
+    }
+
+    private void getSprites(){
+
     }
 
 
-    public void startThread(){
+    public void startGame(){
+        currentMap = mapGenerator();
+
+        int totalWalls = 0;
+        for(int i = 1; i < currentMap.length - 1; i++){
+            for(int j = 1; j < currentMap[i].length - 1; j++){
+                if(currentMap[i - 1][j] == 0 && currentMap[i - 1][j] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i + 1][j] == 0 && currentMap[i + 1][j] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i][j - 1] == 0 && currentMap[i][j - 1] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+                if(currentMap[i][j + 1] == 0 && currentMap[i][j + 1] + currentMap[i][j] > 0){
+                    totalWalls++;
+                }
+            }
+        }
+        totalWalls = 3 * totalWalls;
+        int wallCount = 0;
+
+        /*
+            Rest of game stuff here
+         */
+        player = new Player(this,0,0,0);
+        startState = true;
         thread = new Thread(this);
         thread.start();
     }
@@ -221,6 +271,15 @@ public class GamePanel extends JPanel implements Runnable{
     public void paint(Graphics g){
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
+        if(startState){
+            //print start screen
+        }
+        if(playState){
+
+        }
+        if(pauseState){
+
+        }
         player.tileX = (int) (player.x / 48);
         player.tileZ = (int) (player.z / 48);
 
