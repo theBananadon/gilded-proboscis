@@ -15,30 +15,32 @@ public class Player extends Entity {
     }
 
     public void updatePlayer(){
-        updateAxis();
-        if(forward){
-            z += 5 * normal[2];
-            x += 5 * normal[0];
-        }
-        if(backward){
-            z -= 5 * normal[2];
-            x -= 5 * normal[0];
-        }
-        if(right){
-            x += 5 * normal[2];
-            z -= 5 * normal[0];
+        if(gp.playState) {
+            updateAxis();
+            if (forward) {
+                z += 5 * normal[2];
+                x += 5 * normal[0];
+            }
+            if (backward) {
+                z -= 5 * normal[2];
+                x -= 5 * normal[0];
+            }
+            if (right) {
+                x += 5 * normal[2];
+                z -= 5 * normal[0];
 
-        }
-        if(left){
-            x -= 5 * normal[2];
-            z += 5 * normal[0];
+            }
+            if (left) {
+                x -= 5 * normal[2];
+                z += 5 * normal[0];
 
-        }
-        if(turnRight){
-            xAngle = (xAngle - Math.PI / 50) % (2 * Math.PI);
-        }
-        if(turnLeft){
-            xAngle = (xAngle + Math.PI / 50) % (2 * Math.PI);
+            }
+            if (turnRight) {
+                xAngle = (xAngle - Math.PI / 50) % (2 * Math.PI);
+            }
+            if (turnLeft) {
+                xAngle = (xAngle + Math.PI / 50) % (2 * Math.PI);
+            }
         }
     }
 
