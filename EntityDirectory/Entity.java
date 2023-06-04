@@ -19,6 +19,25 @@ public class Entity {
         this.tileZ = (int) (x / gp.TILE_SIZE);
     }
 
+    public Entity(GamePanel gp, Point[] points, int[] distance){
+        this.gp = gp;
+        this.points = points;
+        this.distance = distance;
+
+    }
+
+    public Point calculateCentre(Player player){
+        double xAvg = 0, yAvg = 0, zAvg = 0;
+
+        int num = points.length;
+        for (int i = 0; i < num; i++) {
+            xAvg += Math.abs((player.x - points[i].x) / num);
+            yAvg += Math.abs((player.y - points[i].y) / num);
+            zAvg += Math.abs((player.z - distance[i]) / num);
+        }
+
+        return new Point((int) xAvg, (int) zAvg);
+    }
 
 
 }
