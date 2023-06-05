@@ -246,7 +246,7 @@ public class GamePanel extends JPanel implements Runnable{
         testWall = new Wall(this, points, zValues);
 
 
-        player = new Player(this,0,0,0);
+        player = new Player(this,0,0,0, currentMap);
         obj = new ObjectPrinter(this, player);
 
 
