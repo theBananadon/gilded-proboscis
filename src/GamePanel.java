@@ -131,7 +131,7 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     private void resetGame() {
-        currentMap = mapGenerator();
+        currentMap = makeMap();
 
         int totalWalls = 0;
         for(int i = 1; i < currentMap.length - 1; i++){
@@ -417,8 +417,22 @@ public class GamePanel extends JPanel implements Runnable{
 
     }
 
-    public int[][] mapGenerator() {
-        int[][] maze;
+    public boolean mapChecker(int[][] maze2) {
+
+        for (int i = 0; i < 32; i++) {
+            if (maze2[i][0] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+
+    public int[][] makeMap() {
+
+
         // dimensions of generated maze
         int r = 32, c = 32;
 
@@ -430,11 +444,11 @@ public class GamePanel extends JPanel implements Runnable{
         for (int x = 0; x < r; x++) maz[x] = s.toString().toCharArray();
 
         // select random point and open as start node
-        Point st = new Point((int) (Math.random() * r), (int) (Math.random() * c), null);
+        Point st = new Point((int)(Math.random() * r), (int)(Math.random() * c), null);
         maz[st.r][st.c] = 'S';
 
         // iterate through direct neighbors of node
-        ArrayList<Point> frontier = new ArrayList<Point>();
+        ArrayList <Point> frontier = new ArrayList <Point> ();
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++) {
                 if (x == 0 && y == 0 || x != 0 && y != 0)
@@ -452,7 +466,7 @@ public class GamePanel extends JPanel implements Runnable{
         while (!frontier.isEmpty()) {
 
             // pick current node at random
-            Point cu = frontier.remove((int) (Math.random() * frontier.size()));
+            Point cu = frontier.remove((int)(Math.random() * frontier.size()));
             Point op = cu.opposite();
             try {
                 // if both node and its opposite are walls
@@ -489,27 +503,31 @@ public class GamePanel extends JPanel implements Runnable{
         }
 
 
-        maze = new int[r][c];
+
+        currentMap = new int[r][c];
         for (int e = 0; e < r; e++) {
             for (int b = 0; b < c; b++) {
                 if (maz[e][b] == '*') {
-                    maze[e][b] = 0;
+                    currentMap[e][b] = 0;
                 } else {
-                    maze[e][b] = 1;
+                    currentMap[e][b] = 1;
                 }
                 if (13 <= e && e <= 20 && 13 <= b && b <= 20) {
-                    maze[e][b] = 2;
+                    currentMap[e][b] = 2;
                 }
             }
         }
         int roomsize = 4;
         boolean tempPlace = true;
         int q = (int) (Math.random() * (32 - 8));
-        for (int i = q; i < q + 8; i++) {
+        for (int i = q; i < q+8; i++) {
             for (int j = 30; j < c; j++) {
-                maze[j][i] = 4;
+                currentMap[j][i] = 4;
             }
         }
+
+
+
         while (tempPlace) {
             int x = (int) (Math.random() * (32 - roomsize));
             int y = (int) (Math.random() * (32 - roomsize));
@@ -522,7 +540,7 @@ public class GamePanel extends JPanel implements Runnable{
                 for (int f = 0; f < roomsize; f++) {
 
 
-                    if (maze[x + n][y + f] >= 2) {
+                    if (currentMap[x + n][y + f] >= 2) {
                         tempPlace = false;
                         break;
                     }
@@ -531,25 +549,30 @@ public class GamePanel extends JPanel implements Runnable{
                 }
             }
             if (tempPlace) {
-                for (int i = x; i < x + roomsize; i++) {
-                    for (int j = y; j < y + roomsize; j++) {
-                        maze[i][j] = 3;
+                for (int i = x; i < x+roomsize; i++) {
+                    for (int j = y; j < y+roomsize; j++) {
+                        currentMap[i][j] = 3;
                     }
                 }
             }
         }
 
 
+
+
+
+
+
+
+
+
+
+
         // print final maze
-//        for (int i = 0; i < r; i++) {
-//            for (int j = 0; j < c; j++)
-//                System.out.print(maze[i][j]);
-//            System.out.println();
-//
-//
-//        }
-        return maze;
+
+        return currentMap;
     }
+
 
     static class Point {
         Integer r;
