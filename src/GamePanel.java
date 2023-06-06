@@ -1,7 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -15,11 +19,12 @@ public class GamePanel extends JPanel implements Runnable{
     Wall[] walls;
     ObjectPrinter obj;
     Wall testWall;
+    public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null;
 
 
     public GamePanel(){
         this.setFocusable(true);
-        this.setPreferredSize(new Dimension(600,600));
+        this.setPreferredSize(new Dimension(864,672));
         this.setBackground(new Color(0,0,0));
         getSprites();
         this.addKeyListener(new KeyListener() {
@@ -256,7 +261,13 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     private void getSprites(){
-
+        try{
+            startScreen = ImageIO.read(new File("images\\startScreen.jpg"));
+            victoryScreen1 = ImageIO.read(new File("images\\congratulations.png"));
+            victoryScreen2 = ImageIO.read(new File("images\\lore.png"));
+        }catch(NullPointerException | IOException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -265,8 +276,7 @@ public class GamePanel extends JPanel implements Runnable{
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
         if(startState){
-            g2d.setColor(Color.WHITE);
-            g2d.fillOval(100,100,50,50);
+            g2d.drawImage(startScreen, 0,0,864,672, null);
         }
         if(playState){
             player.tileX = (int) (player.x / 48);
