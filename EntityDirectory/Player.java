@@ -20,29 +20,29 @@ public class Player extends Entity {
             updateAxis();
             if (forward) {
                 if(checkCollision(5 * normal[0], 5 * normal[2])){
-                    z += 5 * normal[2];
-                    x += 5 * normal[0];
+                    z += 2 * normal[2];
+                    x += 2 * normal[0];
                 }
             }
             if (backward) {
                 if(checkCollision(-5 * normal[0], -5 * normal[2])){
-                    z -= 5 * normal[2];
-                    x -= 5 * normal[0];
+                    z -= 2 * normal[2];
+                    x -= 2 * normal[0];
                 }
                 
             }
             if (right) {
                 if(checkCollision(5 * normal[2], -5 * normal[0])){
-                    x += 5 * normal[2];
-                    z -= 5 * normal[0];
+                    x += 2 * normal[2];
+                    z -= 2 * normal[0];
                 }
              
 
             }
             if (left) {
                 if(checkCollision(-5 * normal[2], 5 * normal[0])){
-                    x -= 5 * normal[2];
-                    z += 5 * normal[0];
+                    x -= 2 * normal[2];
+                    z += 2 * normal[0];
                 }
                 
 
