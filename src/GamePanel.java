@@ -20,7 +20,7 @@ public class GamePanel extends JPanel implements Runnable{
     ObjectPrinter obj;
     Wall testWall;
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null;
-
+    boolean isMap = false;
 
     public GamePanel(){
         this.setFocusable(true);
@@ -65,7 +65,7 @@ public class GamePanel extends JPanel implements Runnable{
                         pauseState = true;
                     }
                     if(e.getKeyCode() == KeyEvent.VK_M){
-                        //insert Map method call
+                        isMap = true;
                     }
                     if(e.getKeyCode() == KeyEvent.VK_I){
                         //insert Inventory method call
@@ -117,6 +117,9 @@ public class GamePanel extends JPanel implements Runnable{
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     player.turnDown = false;
                 }
+                if(e.getKeyCode() == KeyEvent.VK_M){
+                    isMap = false;
+                }
             }
             if(pauseState){
                 if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !allowEscape){
@@ -132,6 +135,7 @@ public class GamePanel extends JPanel implements Runnable{
 
     private void resetGame() {
         currentMap = makeMap();
+
 
         int totalWalls = 0;
         for(int i = 1; i < currentMap.length - 1; i++){
@@ -271,8 +275,10 @@ public class GamePanel extends JPanel implements Runnable{
             g2d.drawImage(startScreen, 0,0,864,672, null);
         }
         if(playState){
-            player.tileX = (int) (player.x / 48);
-            player.tileZ = (int) (player.z / 48);
+
+                player.tileX = (int) (player.x / 48);
+                player.tileZ = (int) (player.z / 48);
+
 
             ArrayList<Entity> printableWalls = new ArrayList<>();
             for(int i = 0; i < walls.length; i++){
@@ -289,7 +295,27 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 
-            //ObjectPrinter.paint(g2d, testWall);
+
+            if (isMap)
+            {
+                for (int i = 0; i < 34; i++) {
+                    for (int j = 0; j < 34; j++) {
+
+                        //Drew Main Room, Tasks Room, Floor Panels + Wall
+                        if (currentMap[i][j] == 0) {
+                            g2d.setColor(Color.WHITE);
+                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                        }
+                        if (currentMap[i][j] == 7) {
+                            g2d.setColor(Color.RED);
+                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                        }
+                        //Draw border
+
+
+                    }
+                }
+            }
         }
         if(pauseState){
 
@@ -416,6 +442,9 @@ public class GamePanel extends JPanel implements Runnable{
 
     public int[][] makeMap() {
 
+        int[][] mapMap = new int[34][34];
+        int[][] mapMapMap = new int[32][32];
+
 
         // dimensions of generated maze
         int r = 32, c = 32;
@@ -488,16 +517,16 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 
-        currentMap = new int[r][c];
+
         for (int e = 0; e < r; e++) {
             for (int b = 0; b < c; b++) {
                 if (maz[e][b] == '*') {
-                    currentMap[e][b] = 0;
+                    mapMapMap[e][b] = 0;
                 } else {
-                    currentMap[e][b] = 1;
+                    mapMapMap[e][b] = 1;
                 }
                 if (13 <= e && e <= 20 && 13 <= b && b <= 20) {
-                    currentMap[e][b] = 2;
+                    mapMapMap[e][b] = 2;
                 }
             }
         }
@@ -506,13 +535,16 @@ public class GamePanel extends JPanel implements Runnable{
         int q = (int) (Math.random() * (32 - 8));
         for (int i = q; i < q+8; i++) {
             for (int j = 30; j < c; j++) {
-                currentMap[j][i] = 4;
+                mapMapMap[j][i] = 4;
             }
         }
 
 
+        int roomNumber = 0;
 
-        while (tempPlace) {
+        while (roomNumber < 3) {
+
+
             int x = (int) (Math.random() * (32 - roomsize));
             int y = (int) (Math.random() * (32 - roomsize));
 
@@ -524,7 +556,7 @@ public class GamePanel extends JPanel implements Runnable{
                 for (int f = 0; f < roomsize; f++) {
 
 
-                    if (currentMap[x + n][y + f] >= 2) {
+                    if (mapMapMap[x + n][y + f] >= 2) {
                         tempPlace = false;
                         break;
                     }
@@ -535,9 +567,27 @@ public class GamePanel extends JPanel implements Runnable{
             if (tempPlace) {
                 for (int i = x; i < x+roomsize; i++) {
                     for (int j = y; j < y+roomsize; j++) {
-                        currentMap[i][j] = 3;
+                        mapMapMap[i][j] = 3;
                     }
+
                 }
+                int v = 0;
+                int z = 0;
+                while (!(mapMapMap[v][z] == 1)) {
+                    v = (int) (Math.random() * 32);
+                    z = (int) (Math.random() * 32);
+                }
+                mapMapMap[v][z] = 7;
+             roomNumber++;
+            }
+            tempPlace = true;
+
+        }
+
+        for (int i = 1; i < 33; i++) { //top wall
+            for (int j = 1; j < 33; j++) {
+                mapMap[i][j] = mapMapMap[i-1][j-1];
+
             }
         }
 
@@ -554,7 +604,7 @@ public class GamePanel extends JPanel implements Runnable{
 
         // print final maze
 
-        return currentMap;
+        return mapMap;
     }
 
 
