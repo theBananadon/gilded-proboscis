@@ -51,7 +51,7 @@ public class ObjectPrinter {
                 yPoints[i] = paintPoints[i][0].y;
             }
             Point dis = entity.calculateCentre(player);
-            double max = Math.max(0, Math.min(255 * (200 - dis.distance(0,0))/ 200.0, 255));
+            double max = Math.max(0, Math.min(200 * (200 - dis.distance(0,0))/ 200.0, 255));
             g2d.setColor(new Color((int) max, (int) max, (int) max));
             g2d.fillPolygon(xPoints, yPoints, 4);
         }
