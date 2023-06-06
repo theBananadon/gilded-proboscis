@@ -57,8 +57,8 @@ public class Player extends Entity {
     }
     
     public boolean checkCollision(double xSpeed, double zSpeed){
-        int finalTileX = (x + xSpeed) / gp.TILE_SIZE;
-        int finalTileZ = (z + zSpeed) / gp.TILE_SIZE;
+        int finalTileX = (int) ((x + xSpeed) / gp.TILE_SIZE);
+        int finalTileZ = (int) ((z + zSpeed) / gp.TILE_SIZE);
         if(map[finalTileX][finalTileZ] == 0){
             return false;
         }
