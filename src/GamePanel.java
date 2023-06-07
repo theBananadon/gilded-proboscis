@@ -22,6 +22,8 @@ public class GamePanel extends JPanel implements Runnable{
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null;
     boolean isMap = false;
 
+    //mapmap = border
+    //mapMapMap = Actual minimap (excluding border)
     public GamePanel(){
         this.setFocusable(true);
         this.setPreferredSize(new Dimension(864,672));
@@ -291,6 +293,13 @@ my intuition is telling me its the latter
 Editor note 2 for wall creation (burhanuddin)
 yeah the horizontal walls are plagued with similar issue
 when trying to edit wall sizes for maximum scaryness, constant z wall 1 was non existant
+
+
+Tasks to complete for George:
+-Code key spawn (random) after all other tasks are complete
+-Create condition to check if all other tasks are complete
+-Code ability to collect key by pressing e
+-Create condition for the ability to pick up the key by checking if the player is within 1 tile
  */
     }
 
@@ -354,7 +363,20 @@ when trying to edit wall sizes for maximum scaryness, constant z wall 1 was non 
                             g2d.setColor(Color.RED);
                             g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
                         }
-                        //Draw border
+                        if (currentMap[i][j] != 0 && currentMap[i][j] != 7) {
+                            int alpha = 240;
+                            Color transparency = new Color(0,0,0,alpha);
+                            g2d.setColor(transparency);
+                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                        }
+                        if (currentMap[i][j] == 8) {
+                            int alpha = 240;
+                            //Use to test: g2d.setColor(Color.GREEN);
+                            Color keyInvisibility = new Color(0,0,0,alpha);
+                            g2d.setColor(keyInvisibility);
+                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                        }
+
 
 
                     }
@@ -638,19 +660,31 @@ when trying to edit wall sizes for maximum scaryness, constant z wall 1 was non 
                 }
                 int v = 0;
                 int z = 0;
+                //Randomizer for Red Squares
                 while (!(mapMapMap[v][z] == 1)) {
                     v = (int) (Math.random() * 32);
                     z = (int) (Math.random() * 32);
                 }
                 mapMapMap[v][z] = 7;
+
+
+
                 roomNumber++;
             }
+
             tempPlace = true;
 
         }
 
         int v = 0;
         int z = 0;
+        while (!(mapMapMap[v][z] == 1)) {
+            v = (int) (Math.random() * 32);
+            z = (int) (Math.random() * 32);
+        }
+        mapMapMap[v][z] = 8;
+        v = 0;
+        z = 0;
         while (!(mapMapMap[v][z] == 1)) {
             v = (int) (Math.random() * 32);
             z = (int) (Math.random() * 32);
