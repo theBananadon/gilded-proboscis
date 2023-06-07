@@ -185,8 +185,8 @@ public class GamePanel extends JPanel implements Runnable{
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
-                    points[0] = new java.awt.Point(wallNumber * 16 * i,-15);
-                    points[1] = new java.awt.Point(wallNumber * 16 * i,-15);
+                    points[0] = new java.awt.Point(wallNumber * 16 * i,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i,-5);
                     points[2] = new java.awt.Point(wallNumber * 16 * i,12);
                     points[3] = new java.awt.Point(wallNumber * 16 * i,12);
                     zValues = new int[]{wallNumber * 16 * j, wallNumber * 16 * j + 16, wallNumber * 16 * j + 16, wallNumber * 16 * j};
@@ -259,7 +259,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 
-        java.awt.Point[] points = new java.awt.Point[]{new java.awt.Point(50,-10), new java.awt.Point(-50,-10), new java.awt.Point(-50, 10), new java.awt.Point(50, 10)};
+        java.awt.Point[] points = new java.awt.Point[]{new java.awt.Point(16,-10), new java.awt.Point(-0,-10), new java.awt.Point(-0, 10), new java.awt.Point(16, 10)};
         int[] zValues = new int[]{30,30,30,30};
         testWall = new Wall(this, points, zValues);
         int r = 0, s = 0;
@@ -273,6 +273,8 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
         player = new Player(this,r * TILE_SIZE + TILE_SIZE / 2,0,s * TILE_SIZE + TILE_SIZE / 2, currentMap);
+//        player = new Player(this,0,0,0, currentMap);
+
         obj = new ObjectPrinter(this, player);
 
 /*
@@ -334,7 +336,7 @@ when trying to edit wall sizes for maximum scaryness, constant z wall 1 was non 
                 ObjectPrinter.paint(g2d, printedStuff[i]);
             }
 
-
+//            ObjectPrinter.paint(g2d, testWall);
 
 
             if (isMap)
