@@ -57,7 +57,6 @@ public class Player extends Entity {
                 x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle + Math.PI / 50));
                 z -= 20 * (Math.cos(xAngle) - Math.cos(xAngle + Math.PI / 50));
             }
-            System.out.println(x + ", " + z);
         }
     }
     
