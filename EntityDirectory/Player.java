@@ -49,17 +49,23 @@ public class Player extends Entity {
             }
             if (turnRight) {
                 xAngle = (xAngle - Math.PI / 50) % (2 * Math.PI);
+                x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle - Math.PI / 50));
+                z -= 20 * ( Math.cos(xAngle) - Math.cos(xAngle - Math.PI / 50));
             }
             if (turnLeft) {
                 xAngle = (xAngle + Math.PI / 50) % (2 * Math.PI);
+                x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle + Math.PI / 50));
+                z -= 20 * (Math.cos(xAngle) - Math.cos(xAngle + Math.PI / 50));
             }
+            System.out.println(x + ", " + z);
         }
     }
     
     public boolean checkCollision(double xSpeed, double zSpeed){
         int finalTileX = (int) ((x + xSpeed) / gp.TILE_SIZE);
         int finalTileZ = (int) ((z + zSpeed) / gp.TILE_SIZE);
-        return map[finalTileX][finalTileZ] != 0;
+        return true;
+        //return map[finalTileX][finalTileZ] != 0;
     }
 
     public void updateAxis(){
