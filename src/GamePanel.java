@@ -19,7 +19,7 @@ public class GamePanel extends JPanel implements Runnable{
     Wall[] walls;
     ObjectPrinter obj;
     Wall testWall;
-    public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null;
+    public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null, deathScreen = null, creditScreen = null;
     boolean isMap = false;
 
     //mapmap = border
@@ -311,6 +311,8 @@ Tasks to complete for George:
             startScreen = ImageIO.read(new File("images\\startScreen.jpg"));
             victoryScreen1 = ImageIO.read(new File("images\\congratulations.png"));
             victoryScreen2 = ImageIO.read(new File("images\\lore.png"));
+            deathScreen = ImageIO.read(new File("images\\deathscreen.png"));
+            creditScreen = ImageIO.read(new File("images\\creditscreen.png"));
         }catch(NullPointerException | IOException e){
             e.printStackTrace();
         }
