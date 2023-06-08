@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements Runnable{
     boolean isMap = false;
     Tasks[] tasks = new Tasks[3];
     TaskObject[] taskObjects = new TaskObject[3];
+    boolean isFlashLightOn = false;
+    boolean flashLightToggle = true;
 
     //mapmap = border
     //mapMapMap = Actual minimap (excluding border)
@@ -77,6 +79,14 @@ public class GamePanel extends JPanel implements Runnable{
                     if(e.getKeyCode() == KeyEvent.VK_E){
                         player.isWorkingOnTask = true;
                     }
+                    if(e.getKeyCode() == KeyEvent.VK_SPACE && flashLightToggle){
+                        isFlashLightOn = !isFlashLightOn;
+                        flashLightToggle = false;
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                        pauseState = true;
+                        playState = false;
+                    }
                 }
                 if(startState){
                     if(e.getKeyCode() == KeyEvent.VK_SPACE){
@@ -86,6 +96,12 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                 }
                 if(pauseState && allowEscape){
+                    isMap = false;
+                    if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                        pauseState = false;
+                        playState = true;
+                        allowEscape = false;
+                    }
                     if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
                         pauseState = false;
                         startState = true;
@@ -127,6 +143,9 @@ public class GamePanel extends JPanel implements Runnable{
                     if(e.getKeyCode() == KeyEvent.VK_M){
                         isMap = false;
                     }
+                    if(e.getKeyCode() == KeyEvent.VK_SPACE && !flashLightToggle){
+                        flashLightToggle = true;
+                    }
                 }
                 if(pauseState){
                     if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE && !allowEscape){
@@ -160,8 +179,8 @@ public class GamePanel extends JPanel implements Runnable{
         totalWalls = wallNumber * (totalWalls);
         walls = new Wall[totalWalls];
 
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
@@ -187,8 +206,8 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
 
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
@@ -213,8 +232,8 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
 
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
@@ -236,8 +255,8 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
 
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
@@ -286,6 +305,7 @@ public class GamePanel extends JPanel implements Runnable{
             for(int j = 0; j < currentMap.length; j++){
                 if(currentMap[i][j] == 7){
                     taskObjects[taskObjectNumber] = new TaskObject(this, i * TILE_SIZE + TILE_SIZE / 2.0, 0, j * TILE_SIZE  + TILE_SIZE / 2.0, null);
+                    taskObjectNumber++;
                 }
             }
         }
@@ -336,27 +356,44 @@ Tasks to complete for George:
     public void paint(Graphics g){
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
+
         if(startState){
             g2d.drawImage(startScreen, 0,0,864,672, null);
         }
-        if(playState){
+        if(playState || pauseState){
 
-            player.tileX = (int) (player.x / TILE_SIZE );
-            player.tileZ = (int) (player.z / TILE_SIZE);
+            int scaleConstant = 0;
+            if(isFlashLightOn){
+                scaleConstant++;
+            }
 
 
-            ArrayList<Entity> printableWalls = new ArrayList<>();
+            ArrayList<Entity> printableEntities = new ArrayList<>();
             for(int i = 0; i < walls.length; i++){
                 if(walls[i] != null) {
-                    if (walls[i].calculateCentre(player).distance(0, 0) < 25600) {
-                        printableWalls.add(walls[i]);
+                    if (walls[i].calculateCentre(player).distance(0, 0) < 50 + 100 * scaleConstant) {
+                        printableEntities.add(walls[i]);
                     }
                 }
             }
-            Entity[] printedStuff = new Entity[printableWalls.size()];
-            printableWalls.toArray(printedStuff);
-            quickSort(printedStuff);
+            for(int i = 0; i < taskObjects.length; i++) {
+                if(taskObjects[i] != null){
+                    taskObjects[i].updateImage();
+                    if(taskObjects[i].calculateCentre(player).distance(0,0) < 50 + 100 * scaleConstant){
+                        printableEntities.add(taskObjects[i]);
+                    }
+                }
+            }
+
+            Entity[] printedStuff = new Entity[printableEntities.size()];
+            printableEntities.toArray(printedStuff);
+            if(printedStuff.length > 0) {
+                quickSort(printedStuff);
+            }
             for(int i = printedStuff.length - 1; i >= 0; i--){
+                if(printedStuff[i] instanceof TaskObject){
+
+                }
                 ObjectPrinter.paint(g2d, printedStuff[i]);
             }
 
@@ -372,10 +409,6 @@ Tasks to complete for George:
                         //Drew Main Room, Tasks Room, Floor Panels + Wall
                         if (currentMap[i][j] == 0) {
                             g2d.setColor(Color.WHITE);
-                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
-                        }
-                        if (currentMap[i][j] == 7) {
-                            g2d.setColor(Color.RED);
                             g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
                         }
                         if (currentMap[i][j] != 0 && currentMap[i][j] != 7) {
@@ -397,26 +430,19 @@ Tasks to complete for George:
                     }
                 }
 
+                for(int i = 0; i < taskObjects.length; i++){
+                    if(taskObjects[i] != null){
+                        if (currentMap[taskObjects[i].tileX][taskObjects[i].tileZ] == 7) {
+                            g2d.setColor(Color.RED);
+                            g2d.fillRect(16 * taskObjects[i].tileX + 160, 16 * taskObjects[i].tileZ + 64, 16, 16);
+                        }
+                    }
+                }
+
 
                 g2d.setColor(Color.BLUE);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.fillRect(16 * player.tileX + 160, 16 * player.tileZ + 64, 16, 16);
-                for(int i = 1; i < currentMap.length - 1; i++){
-                    for(int j = 1; j < currentMap[i].length - 1; j++){
-                        if(currentMap[i][j] == 0) {
-                            g2d.drawLine(16 * i + 160, 16 * j + 64, 16 * i + 172, 16 * j + 64);
-
-
-                            g2d.drawLine(16 * i + 160, 16 * j + 80, 16 * i + 172, 16 * j + 80);
-
-
-                            g2d.drawLine(16 * i + 160, 16 * j + 64, 16 * i + 160, 16 * j + 80);
-
-
-                            g2d.drawLine(16 * i + 172, 16 * j + 64, 16 * i + 172, 16 * j + 80);
-                        }
-                    }
-                }
             }
         }
         if(pauseState){

@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class ObjectPrinter {
 
-    GamePanel gp;
+    static GamePanel gp;
     static Player player;
 
     public ObjectPrinter(GamePanel gp, Player player){
@@ -33,7 +33,7 @@ public class ObjectPrinter {
             return false;
         }
         for(int i = 0; i < points.length; i++){
-            if(points[i][1].x >= -20 && points[i][1].x <= 160){
+            if(points[i][1].x >= -2 && points[i][1].x <= 160){
                 return true;
             }
         }
@@ -50,8 +50,12 @@ public class ObjectPrinter {
                 xPoints[i] = paintPoints[i][0].x;
                 yPoints[i] = paintPoints[i][0].y;
             }
+            int scaleConstant = 0;
+            if(gp.isFlashLightOn){
+                scaleConstant++;
+            }
             Point dis = entity.calculateCentre(player);
-            double max = Math.max(0, Math.min(200 * (200 - dis.distance(0,0))/ 200.0, 255));
+            double max = Math.max(0, Math.min(200 * (50 + 100 * scaleConstant - dis.distance(0,0))/ 200.0, 255));
             g2d.setColor(new Color((int) max, (int) max, (int) max));
             g2d.fillPolygon(xPoints, yPoints, 4);
         }

@@ -57,6 +57,7 @@ public class Player extends Entity {
                 xAngle = (xAngle - Math.PI / 50) % (2 * Math.PI);
                 x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle - Math.PI / 50));
                 z -= 20 * ( Math.cos(xAngle) - Math.cos(xAngle - Math.PI / 50));
+
             }
             if (turnLeft) {
                 xAngle = (xAngle + Math.PI / 50) % (2 * Math.PI);
@@ -66,6 +67,8 @@ public class Player extends Entity {
         }
         isTaskObjectBeingCollected(taskObjects);
         isWorkingOnTask(tasks);
+        tileX = (int) ((x + 20 * Math.sin(xAngle)) / gp.TILE_SIZE);
+        tileZ = (int) ((z - 20 * Math.cos(xAngle)) / gp.TILE_SIZE);
     }
 
     public boolean checkCollision(double xSpeed, double zSpeed){
