@@ -21,6 +21,8 @@ public class GamePanel extends JPanel implements Runnable{
     Wall testWall;
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null, deathScreen = null, creditScreen = null;
     boolean isMap = false;
+    Tasks[] tasks = new Tasks[3];
+    TaskObject[] taskObjects = new TaskObject[3];
 
     //mapmap = border
     //mapMapMap = Actual minimap (excluding border)
@@ -71,6 +73,9 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                     if(e.getKeyCode() == KeyEvent.VK_I){
                         //insert Inventory method call
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_E){
+                        player.isWorkingOnTask = true;
                     }
                 }
                 if(startState){
@@ -274,8 +279,16 @@ public class GamePanel extends JPanel implements Runnable{
                 }
             }
         }
-        player = new Player(this,r * TILE_SIZE + TILE_SIZE / 2,0,s * TILE_SIZE + TILE_SIZE / 2, currentMap);
+        player = new Player(this,r * TILE_SIZE + TILE_SIZE / 2.0,0,s * TILE_SIZE + TILE_SIZE / 2.0, currentMap);
 //        player = new Player(this,0,0,0, currentMap);
+        int taskObjectNumber = 0;
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap.length; j++){
+                if(currentMap[i][j] == 7){
+                    taskObjects[taskObjectNumber] = new TaskObject(this, i * TILE_SIZE + TILE_SIZE / 2.0, 0, j * TILE_SIZE  + TILE_SIZE / 2.0, null);
+                }
+            }
+        }
 
         obj = new ObjectPrinter(this, player);
 
@@ -311,7 +324,7 @@ Tasks to complete for George:
             startScreen = ImageIO.read(new File("images\\startScreen.jpg"));
             victoryScreen1 = ImageIO.read(new File("images\\congratulations.png"));
             victoryScreen2 = ImageIO.read(new File("images\\lore.png"));
-            deathScreen = ImageIO.read(new File("images\\deathscreen.png"));
+            deathScreen = ImageIO.read(new File("images\\defeatscreen.png"));
             creditScreen = ImageIO.read(new File("images\\creditscreen.png"));
         }catch(NullPointerException | IOException e){
             e.printStackTrace();
@@ -507,7 +520,7 @@ Tasks to complete for George:
 
     public void update(){
         if(playState) {
-            player.updatePlayer();
+            player.updatePlayer(tasks, taskObjects);
 
         }
 
@@ -662,6 +675,13 @@ Tasks to complete for George:
                 }
                 int v = 0;
                 int z = 0;
+
+                /*
+                Add Task objects from Game panel here to make life easier
+                should be random point on the walls of the room
+                 */
+
+
                 //Randomizer for Red Squares
                 while (!(mapMapMap[v][z] == 1)) {
                     v = (int) (Math.random() * 32);
