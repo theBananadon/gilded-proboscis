@@ -1,18 +1,13 @@
-public class TaskObject {
+import java.awt.image.BufferedImage;
 
+public class TaskObject extends Entity{
 
-
-
-
-
-
-
-
-
-
-
-
-    public static void main(String[] args) {
+    public TaskObject(GamePanel gp, double x, double y, double z, BufferedImage taskSprite) {
+        super(gp, x, y, z);
+        super.defaultImage = taskSprite;
 
     }
+
+
+
 }
