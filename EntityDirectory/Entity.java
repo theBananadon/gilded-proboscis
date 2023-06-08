@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Entity {
     public Point[] points;
@@ -8,6 +9,7 @@ public class Entity {
     public double y;
     public double z;
     int tileX = 0; int tileZ = 0;
+    public BufferedImage defaultImage;
 
 
     public Entity(GamePanel gp, double x, double y, double z){
