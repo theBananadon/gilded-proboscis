@@ -51,14 +51,19 @@ public class ObjectPrinter {
                 yPoints[i] = paintPoints[i][0].y;
             }
             int scaleConstant = 0;
-
             if(gp.isFlashLightOn){
                 scaleConstant++;
             }
             Point dis = entity.calculateCentre(player);
             double max = Math.max(0, Math.min(200 * (50 + 100 * scaleConstant - dis.distance(0,0))/ 200.0, 255));
-            g2d.setColor(new Color((int) max, (int) max, (int) max));
-            g2d.fillPolygon(xPoints, yPoints, 4);
+            if(entity instanceof Wall) {
+                g2d.setColor(new Color((int) (max), (int) (max), (int) max));
+                g2d.fillPolygon(xPoints, yPoints, 4);
+            }
+            if(entity instanceof TaskObject){
+                g2d.drawImage(entity.defaultImage, paintPoints[3][0].x, paintPoints[3][0].y, paintPoints[2][0].x - paintPoints[3][0].x, paintPoints[3][0].y - paintPoints[0][0].y, null);
+
+            }
         }
     }
 

@@ -67,13 +67,14 @@ public class Player extends Entity {
         }
         isTaskObjectBeingCollected(taskObjects);
         isWorkingOnTask(tasks);
-        tileX = (int) ((x + 20 * Math.sin(xAngle)) / gp.TILE_SIZE);
-        tileZ = (int) ((z - 20 * Math.cos(xAngle)) / gp.TILE_SIZE);
+        tileX = (int) ((x) / gp.TILE_SIZE);
+        tileZ = (int) ((z) / gp.TILE_SIZE);
     }
 
     public boolean checkCollision(double xSpeed, double zSpeed){
         int finalTileX = (int) ((x + xSpeed) / gp.TILE_SIZE);
         int finalTileZ = (int) ((z + zSpeed) / gp.TILE_SIZE);
+
         return map[finalTileX][finalTileZ] != 0;
     }
 

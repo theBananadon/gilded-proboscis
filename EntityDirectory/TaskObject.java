@@ -7,7 +7,7 @@ public class TaskObject extends Entity{
     public TaskObject(GamePanel gp, double x, double y, double z, BufferedImage taskSprite) {
         super(gp, x, y, z);
         super.defaultImage = taskSprite;
-        points = new Point[]{new Point((int) (x - 3), 2), new Point((int) (x + 3), 2), new Point((int) (x + 3), -2), new Point((int) (x - 3), -2)};
+        points = new Point[]{new Point((int) (x - 3), -2), new Point((int) (x + 3), -2), new Point((int) (x + 3), 2), new Point((int) (x - 3), 2)};
         distance = new int[]{(int) z, (int) z, (int) z, (int) z};
         tileX = (int) (x / gp.TILE_SIZE);
         tileZ = (int) (z / gp.TILE_SIZE);

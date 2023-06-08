@@ -23,6 +23,7 @@ public class GamePanel extends JPanel implements Runnable{
     boolean isMap = false;
     Tasks[] tasks = new Tasks[3];
     TaskObject[] taskObjects = new TaskObject[3];
+    BufferedImage[] taskImages = new BufferedImage[3];
     boolean isFlashLightOn = false;
     boolean flashLightToggle = true;
 
@@ -164,8 +165,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 
         int totalWalls = 0;
-        for(int i = 1; i < currentMap.length - 1; i++){
-            for(int j = 1; j < currentMap[i].length - 1; j++){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     totalWalls += 4;
                 }
@@ -304,7 +305,7 @@ public class GamePanel extends JPanel implements Runnable{
         for(int i = 0; i < currentMap.length; i++){
             for(int j = 0; j < currentMap.length; j++){
                 if(currentMap[i][j] == 7){
-                    taskObjects[taskObjectNumber] = new TaskObject(this, i * TILE_SIZE + TILE_SIZE / 2.0, 0, j * TILE_SIZE  + TILE_SIZE / 2.0, null);
+                    taskObjects[taskObjectNumber] = new TaskObject(this, i * TILE_SIZE + TILE_SIZE / 2.0, 0, j * TILE_SIZE  + TILE_SIZE / 2.0, taskImages[taskObjectNumber]);
                     taskObjectNumber++;
                 }
             }
@@ -346,6 +347,7 @@ Tasks to complete for George:
             victoryScreen2 = ImageIO.read(new File("images\\lore.png"));
             deathScreen = ImageIO.read(new File("images\\defeatscreen.png"));
             creditScreen = ImageIO.read(new File("images\\creditscreen.png"));
+            taskImages[0] = ImageIO.read(new File("images\\wrench.png"));
         }catch(NullPointerException | IOException e){
             e.printStackTrace();
         }
@@ -388,6 +390,7 @@ Tasks to complete for George:
             Entity[] printedStuff = new Entity[printableEntities.size()];
             printableEntities.toArray(printedStuff);
             if(printedStuff.length > 0) {
+
                 quickSort(printedStuff);
             }
             for(int i = printedStuff.length - 1; i >= 0; i--){
