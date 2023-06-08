@@ -51,6 +51,7 @@ public class ObjectPrinter {
                 yPoints[i] = paintPoints[i][0].y;
             }
             int scaleConstant = 0;
+
             if(gp.isFlashLightOn){
                 scaleConstant++;
             }
