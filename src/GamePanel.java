@@ -26,6 +26,9 @@ public class GamePanel extends JPanel implements Runnable{
     BufferedImage[] taskImages = new BufferedImage[3];
     boolean isFlashLightOn = false;
     boolean flashLightToggle = true;
+    double flashLightBattery = 25;
+    double chargingBattery = 0;
+    Noctis nox;
 
     //mapmap = border
     //mapMapMap = Actual minimap (excluding border)
@@ -81,8 +84,21 @@ public class GamePanel extends JPanel implements Runnable{
                         player.isWorkingOnTask = true;
                     }
                     if(e.getKeyCode() == KeyEvent.VK_SPACE && flashLightToggle){
-                        isFlashLightOn = !isFlashLightOn;
+                        if(flashLightBattery <= 0){
+                            isFlashLightOn = false;
+                        } else {
+                            isFlashLightOn = !isFlashLightOn;
+                        }
                         flashLightToggle = false;
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                        if(flashLightBattery <= 0){
+                            chargingBattery += 1.0 / 30;
+                        }
+                        if(chargingBattery >= 2){
+                            flashLightBattery = 25;
+                            chargingBattery = 0;
+                        }
                     }
                     if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
                         pauseState = true;
@@ -161,8 +177,12 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     private void resetGame() {
-        currentMap = makeMap();
 
+
+        currentMap = makeMap();
+//        while(!mapChecker(currentMap)){
+//            currentMap = makeMap();
+//        }
 
         int totalWalls = 0;
         for(int i = 0; i < currentMap.length; i++){
@@ -311,7 +331,19 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
 
+
         obj = new ObjectPrinter(this, player);
+        int x = 0;
+        int z = 32;
+        while(currentMap[x][z] == 0){
+            x++;
+            if(x >= 34){
+                z--;
+                x = 0;
+            }
+        }
+
+        nox = new Noctis(5, 0.5, 1,x, z, 5, this, "null");
 
 /*
 Editor note 1 for wall creation (Burhanuddin)
@@ -387,6 +419,14 @@ Tasks to complete for George:
                 }
             }
 
+            if(nox != null){
+                nox.update(player);
+                if(nox.calculateCentre(player).distance(0,0) < 50 + 100 * scaleConstant){
+                    printableEntities.add(nox);
+                }
+            }
+
+
             Entity[] printedStuff = new Entity[printableEntities.size()];
             printableEntities.toArray(printedStuff);
             if(printedStuff.length > 0) {
@@ -401,6 +441,32 @@ Tasks to complete for George:
             }
 
 //            ObjectPrinter.paint(g2d, testWall);
+
+
+            g2d.setColor(Color.WHITE);
+            g2d.fillRoundRect(604,35,205,80, 15,15);
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(619,45,175,60);
+            g2d.setColor(Color.WHITE);
+            if(flashLightBattery <= 5){
+                g2d.setColor(Color.red);
+            }
+
+            if(flashLightBattery > 0) {
+                Polygon polygon = new Polygon(new int[]{624, 656, 641, 624}, new int[]{50,50,100,100}, 4);
+                g2d.fillPolygon(polygon);
+                for (int i = 0; i < flashLightBattery / 5 - 1; i++) {
+                    if(i+1 < flashLightBattery / 5 - 1 || flashLightBattery < 20) {
+                        Polygon extraPolygon = new Polygon(new int[]{656 + 5 * (i + 1) + 32 * i, 656 + 5 * (i + 1) + 32 * (i + 1), 656 + 5 * (i + 1) + 32 * (i + 1) - 15, 656 + 5 * (i + 1) + 32 * i - 15}, new int[]{50, 50, 100, 100}, 4);
+                        g2d.fillPolygon(extraPolygon);
+                    } else {
+                        Polygon extraPolygon = new Polygon(new int[]{656 + 5 * (i + 1) + 32 * i, 656 + 5 * (i + 1) + 32 * (i + 1) - 15, 656 + 5 * (i + 1) + 32 * (i + 1) - 15, 656 + 5 * (i + 1) + 32 * i - 15}, new int[]{50, 50, 100, 100}, 4);
+                        g2d.fillPolygon(extraPolygon);
+                    }
+
+                }
+            }
+
 
 
             if (isMap)
@@ -422,7 +488,9 @@ Tasks to complete for George:
                         }
                         if (currentMap[i][j] == 8) {
                             int alpha = 240;
-                            //Use to test: g2d.setColor(Color.GREEN);
+                            if(player.taskCompletion[0] && player.taskCompletion[1] && player.taskCompletion[2]) {
+                                g2d.setColor(Color.GREEN);
+                            }
                             Color keyInvisibility = new Color(0,0,0,alpha);
                             g2d.setColor(keyInvisibility);
                             g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
@@ -446,7 +514,11 @@ Tasks to complete for George:
                 g2d.setColor(Color.BLUE);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.fillRect(16 * player.tileX + 160, 16 * player.tileZ + 64, 16, 16);
+
+
+
             }
+
         }
         if(pauseState){
 
@@ -550,11 +622,15 @@ Tasks to complete for George:
     public void update(){
         if(playState) {
             player.updatePlayer(tasks, taskObjects);
+            if(isFlashLightOn){
+                if(flashLightBattery > 0) {
+                    flashLightBattery -= 1 / 30.0;
+                } else {
+                    isFlashLightOn = false;
+                }
+            }
 
         }
-
-
-
 
     }
 

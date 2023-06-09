@@ -43,6 +43,9 @@ public class ObjectPrinter {
 
     public static void paint(Graphics2D g2d, Entity entity){
         Point[][] paintPoints = convertPoints(entity.points, entity.distance);
+        if(entity instanceof Monster){
+            System.out.println(paintPoints[0][1].x);
+        }
         if(isDrawable(paintPoints)){
             int[] xPoints = new int[4];
             int[] yPoints = new int[4];
@@ -60,10 +63,12 @@ public class ObjectPrinter {
                 g2d.setColor(new Color((int) (max), (int) (max), (int) max));
                 g2d.fillPolygon(xPoints, yPoints, 4);
             }
-            if(entity instanceof TaskObject){
+
+            if(entity instanceof TaskObject || entity instanceof Monster){
                 g2d.drawImage(entity.defaultImage, paintPoints[3][0].x, paintPoints[3][0].y, paintPoints[2][0].x - paintPoints[3][0].x, paintPoints[3][0].y - paintPoints[0][0].y, null);
 
             }
+
         }
     }
 
