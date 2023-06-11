@@ -550,7 +550,7 @@ Tasks to complete for George:
             if (isMap)
             {
 
-                for (int i = 0; i < 34; i++) {
+                for (int i = 33; i >= 0; i--) {
                     for (int j = 0; j < 34; j++) {
 
                         //Drew Main Room, Tasks Room, Floor Panels + Wall
