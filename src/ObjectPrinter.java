@@ -41,9 +41,10 @@ public class ObjectPrinter {
         return false;
     }
 
+
     public static void paint(Graphics2D g2d, Entity entity){
         Point[][] paintPoints = convertPoints(entity.points, entity.distance);
-        if(isDrawable(paintPoints)){
+        if(isDrawable(paintPoints) || entity instanceof Floor){
             int[] xPoints = new int[4];
             int[] yPoints = new int[4];
             for(int i = 0; i < 4; i++){
@@ -64,6 +65,23 @@ public class ObjectPrinter {
             if(entity instanceof TaskObject || entity instanceof Monster){
                 g2d.drawImage(entity.defaultImage, paintPoints[3][0].x, paintPoints[3][0].y, paintPoints[2][0].x - paintPoints[3][0].x, paintPoints[3][0].y - paintPoints[0][0].y, null);
 
+            }
+            if(entity instanceof Floor){
+                boolean isGonnaCauseCancer = false;
+                for(int i = 0; i < yPoints.length; i++){
+                    if (yPoints[i] < gp.getHeight() / 2) {
+                        isGonnaCauseCancer = true;
+                        break;
+                    }
+                }
+                if(!isGonnaCauseCancer) {
+                    if(((Floor) entity).colorIdentity == 0){
+                        g2d.setColor(new Color((int)  (max), (int) max, (int) max));
+                    } else {
+                        g2d.setColor(Color.BLACK);
+                    }
+                    g2d.fillPolygon(xPoints, yPoints, 4);
+                }
             }
 
         }
