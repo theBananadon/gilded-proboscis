@@ -182,7 +182,7 @@ class Noctis extends Monster {
             x += speed * xChange / distanced;
             z += speed * zChange / distanced;
         }
-        points = new Point[]{new Point((int) (x - 2 * Math.cos(gp.player.xAngle)), -3), new Point((int) (x + 2 * Math.cos(gp.player.xAngle)), -3), new Point((int) (x + 2 * Math.cos(gp.player.xAngle)), 3), new Point((int) (x - 2 * Math.cos(gp.player.xAngle)), 3)};
+        points = new Point[]{new Point((int) (x - 2 * Math.cos(gp.player.xAngle)), -8), new Point((int) (x + 2 * Math.cos(gp.player.xAngle)), -8), new Point((int) (x + 2 * Math.cos(gp.player.xAngle)), 0), new Point((int) (x - 2 * Math.cos(gp.player.xAngle)), 0)};
         distance = new int[]{(int) (z - 2 * Math.sin(gp.player.xAngle)), (int) (z + 2 * Math.sin(gp.player.xAngle)), (int) (z + 2 * Math.sin(gp.player.xAngle)), (int) (z - 2 * Math.sin(gp.player.xAngle))};
 
 
