@@ -43,9 +43,6 @@ public class ObjectPrinter {
 
     public static void paint(Graphics2D g2d, Entity entity){
         Point[][] paintPoints = convertPoints(entity.points, entity.distance);
-        if(entity instanceof Monster){
-            System.out.println(paintPoints[0][1].x);
-        }
         if(isDrawable(paintPoints)){
             int[] xPoints = new int[4];
             int[] yPoints = new int[4];
