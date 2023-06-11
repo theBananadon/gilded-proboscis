@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable{
     private final Thread thread;
-    public final int TILE_SIZE = 16;
+    public final int TILE_SIZE = 32;
     Player player;
     public boolean startState = false, pauseState = false, playState = false, winState = false, loseState = false;
     public boolean allowEscape = false;
@@ -211,23 +211,32 @@ public class GamePanel extends JPanel implements Runnable{
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
-                    points[0] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
-                    points[1] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
-                    points[2] = new java.awt.Point(wallNumber * 16 * i + 16,12);
-                    points[3] = new java.awt.Point(wallNumber * 16 * i + 16,12);
+                    points[0] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,12);
+                    points[3] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,12);
                     zValues = new int[]{wallNumber * 16 * j, wallNumber * 16 * j + 16, wallNumber * 16 * j + 16, wallNumber * 16 * j};
 
                     walls[wallCount] = new Wall(this, points, zValues);
                     wallCount++;
 
-                    for(int l = 1; l < wallNumber; l++) {
-                        for (int k = 0; k < zValues.length; k++) {
-                            zValues[k] += 16;
-                        }
-                        walls[wallCount] = new Wall(this, points, zValues);
-                        wallCount++;
-                    }
+                }
+            }
+        }
 
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
+                if(currentMap[i][j] == 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,12);
+                    points[3] = new java.awt.Point(wallNumber * 16 * i + TILE_SIZE,12);
+                    zValues = new int[]{wallNumber * 16 * j + 16, wallNumber * 16 * j + 32, wallNumber * 16 * j + 32, wallNumber * 16 * j + 16};
+
+                    walls[wallCount] = new Wall(this, points, zValues);
+                    wallCount++;
 
                 }
             }
@@ -246,14 +255,23 @@ public class GamePanel extends JPanel implements Runnable{
 
                     walls[wallCount] = new Wall(this, points, zValues);
                     wallCount++;
-                    for(int l = 1; l < wallNumber; l++) {
-                        for (int k = 0; k < zValues.length; k++) {
-                            zValues[k] += 16;
-                        }
-                        walls[wallCount] = new Wall(this, points, zValues);
-                        wallCount++;
-                    }
+                }
+            }
+        }
 
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
+                if(currentMap[i][j] == 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(wallNumber * 16 * i,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i,12);
+                    points[3] = new java.awt.Point(wallNumber * 16 * i,12);
+                    zValues = new int[]{wallNumber * 16 * j + 16, wallNumber * 16 * j + 32, wallNumber * 16 * j + 32, wallNumber * 16 * j + 16};
+
+                    walls[wallCount] = new Wall(this, points, zValues);
+                    wallCount++;
 
                 }
             }
@@ -264,20 +282,49 @@ public class GamePanel extends JPanel implements Runnable{
                 if(currentMap[i][j] == 0){
                     int[] zValues = new int[4];
                     java.awt.Point[] points = new java.awt.Point[4];
+                    points[0] = new java.awt.Point(wallNumber * 16 * i,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + 16,12);
+                    points[3] = new java.awt.Point(wallNumber * 16 * i,12);
+                    zValues = new int[]{wallNumber * 16 * j, wallNumber * 16 * j, wallNumber * 16 * j, wallNumber * 16 * j};
+                    walls[wallCount] = new Wall(this, points, zValues);
+                    wallCount++;
+                }
+            }
+        }
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
+                if(currentMap[i][j] == 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
                     points[0] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
-                    points[1] = new java.awt.Point(wallNumber * 16 * i,-5);
-                    points[2] = new java.awt.Point(wallNumber * 16 * i,12);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + 32,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + 32,12);
                     points[3] = new java.awt.Point(wallNumber * 16 * i + 16,12);
                     zValues = new int[]{wallNumber * 16 * j, wallNumber * 16 * j, wallNumber * 16 * j, wallNumber * 16 * j};
                     walls[wallCount] = new Wall(this, points, zValues);
                     wallCount++;
-                    for(int l = 1; l < wallNumber; l++) {
-                        for (int k = 0; k < zValues.length; k++) {
-                            points[k].x += 16;
-                        }
-                        walls[wallCount] = new Wall(this, points, zValues);
-                        wallCount++;
-                    }
+                }
+            }
+        }
+
+
+
+
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap[i].length; j++){
+                if(currentMap[i][j] == 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+
+                    points[0] = new java.awt.Point(wallNumber * 16 * i,-5);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + 16,12);
+                    points[3] = new java.awt.Point(wallNumber * 16 * i,12);
+                    zValues = new int[]{wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE};
+                    walls[wallCount] = new Wall(this, points, zValues);
+                    wallCount++;
+
                 }
             }
         }
@@ -289,21 +336,12 @@ public class GamePanel extends JPanel implements Runnable{
                     java.awt.Point[] points = new java.awt.Point[4];
 
                     points[0] = new java.awt.Point(wallNumber * 16 * i + 16,-5);
-                    points[1] = new java.awt.Point(wallNumber * 16 * i,-5);
-                    points[2] = new java.awt.Point(wallNumber * 16 * i,12);
+                    points[1] = new java.awt.Point(wallNumber * 16 * i + 32,-5);
+                    points[2] = new java.awt.Point(wallNumber * 16 * i + 32,12);
                     points[3] = new java.awt.Point(wallNumber * 16 * i + 16,12);
-                    zValues = new int[]{wallNumber * 16 * j + 16, wallNumber * 16 * j + 16, wallNumber * 16 * j + 16, wallNumber * 16 * j + 16};
+                    zValues = new int[]{wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE, wallNumber * 16 * j + TILE_SIZE};
                     walls[wallCount] = new Wall(this, points, zValues);
                     wallCount++;
-                    for(int l = 1; l < wallNumber; l++) {
-                        for (int k = 0; k < zValues.length; k++) {
-                            points[k].x += 16;
-                        }
-                        walls[wallCount] = new Wall(this, points, zValues);
-                        wallCount++;
-                    }
-
-
 
                 }
             }

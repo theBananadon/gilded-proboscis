@@ -124,6 +124,7 @@ class Noctis extends Monster {
     public void move() {
         tileX = (int)(x / gp.TILE_SIZE);
         tileZ = (int) (z / gp.TILE_SIZE);
+        System.out.println(tileX + ", " + tileZ);
         int[][] map = gp.currentMap;
 
         node = new Node[map.length][map.length];
@@ -226,7 +227,11 @@ class Noctis extends Monster {
                     }
                 }
             }
-            currentNode = openList.get(bestNodeIndex);
+            if(openList.size() > 0) {
+                currentNode = openList.get(bestNodeIndex);
+            } else {
+                break;
+            }
             if(currentNode == goalNode){
                 goalNode.parent = currentNode.parent;
                 goalReached = true;
