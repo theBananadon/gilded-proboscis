@@ -13,7 +13,7 @@ public class GamePanel extends JPanel implements Runnable{
     private final Thread thread;
     public final int TILE_SIZE = 16;
     Player player;
-    public boolean startState = false, pauseState = false, playState = false;
+    public boolean startState = false, pauseState = false, playState = false, winState = false, loseState = false;
     public boolean allowEscape = false;
     int[][] currentMap;
     Wall[] walls;
@@ -126,7 +126,13 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                 }
 
-
+            if(winState || loseState){
+                if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                    winState = false;
+                    loseState = false;
+                    startState = true;
+                }
+            }
 
             }
 
@@ -333,17 +339,17 @@ public class GamePanel extends JPanel implements Runnable{
 
 
         obj = new ObjectPrinter(this, player);
-        int x = 0;
-        int z = 32;
-        while(currentMap[x][z] == 0){
-            x++;
-            if(x >= 34){
-                z--;
-                x = 0;
-            }
-        }
+        int x = 17;
+        int z = 17;
+//        while(currentMap[x][z] == 0){
+//            x++;
+//            if(x >= 34){
+//                z--;
+//                x = 0;
+//            }
+//        }
 
-        nox = new Noctis(5, 0.5, 1,x, z, 5, this, "null");
+        nox = new Noctis(5, 0.5, 1, x * TILE_SIZE, z * TILE_SIZE, 5, this, "null");
 
 /*
 Editor note 1 for wall creation (Burhanuddin)
@@ -369,7 +375,11 @@ Tasks to complete for George:
  */
     }
 
-    private void changeGameState() {
+    private void checkLosing() {
+        if(Math.abs(player.x - nox.x) <= 1 && Math.abs(player.z - nox.z) <= 1 ){
+            playState = false;
+            loseState = true;
+        }
     }
 
     private void getSprites(){
@@ -515,6 +525,9 @@ Tasks to complete for George:
                 g2d.setStroke(new BasicStroke(2));
                 g2d.fillRect(16 * player.tileX + 160, 16 * player.tileZ + 64, 16, 16);
 
+                g2d.setColor(Color.GREEN);
+                g2d.setStroke(new BasicStroke(2));
+                g2d.fillRect(16 * nox.tileX + 160, 16 * nox.tileZ + 64, 16, 16);
 
 
             }
@@ -603,12 +616,16 @@ Tasks to complete for George:
             lastTime = currentTime;
 
             if(delta >= 1) {
+                long firstTime = System.nanoTime();
                 // update the game
                 update();
 
                 // paint values regarding said update
                 repaint();
 
+                long lastTie = System.nanoTime();
+
+//                System.out.println((lastTie - firstTime) / 1000000.0);
                 delta--;
 
 
@@ -629,7 +646,7 @@ Tasks to complete for George:
                     isFlashLightOn = false;
                 }
             }
-
+            checkLosing();
         }
 
     }
