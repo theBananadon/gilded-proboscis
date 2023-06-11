@@ -19,8 +19,8 @@ public class ObjectPrinter {
         for(int i = 0; i < points.length; i++){
             double[] r_P = new double[]{points[i].x - player.x, points[i].y - player.y, distance[i] - player.z};
             double s = n[0] * r_P[0] + n[2] * r_P[2];
-            double x2 = 75 * ((xAxis[0] * r_P[0] + xAxis[2] * r_P[2]) / (1 + s / 20)) + 432;
-            double y2 = 75 * ((r_P[1]) / (1 + s / 20)) + 336;
+            double x2 = gp.getWidth() / 10.0 * ((xAxis[0] * r_P[0] + xAxis[2] * r_P[2]) / (1 + s / 20)) + gp.getWidth() / 2.0;
+            double y2 = gp.getHeight() / 8.0 * ((r_P[1]) / (1 + s / 20)) + gp.getHeight() / 2.0;
             newPoints[i][0] = new Point((int) x2, (int) y2);
             newPoints[i][1] = new Point((int) s, 1);
         }

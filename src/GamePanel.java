@@ -440,7 +440,7 @@ Tasks to complete for George:
         Graphics2D g2d = (Graphics2D) g;
 
         if(startState){
-            g2d.drawImage(startScreen, 0,0,864,672, null);
+            g2d.drawImage(startScreen, 0,0,this.getWidth(),this.getHeight(), null);
         }
         if(playState || pauseState){
 
@@ -575,9 +575,9 @@ Tasks to complete for George:
 
         }
         if(loseState){
-            g2d.drawImage(deathScreen, 0,0, 864, 672, null);
+            g2d.drawImage(deathScreen, 0,0, this.getWidth(), this.getHeight(), null);
             if(nox != null){
-                g2d.drawImage(nox.defaultImage, 864 / 2 - 100, 672 / 2 + 75, 200, 200, null);
+                g2d.drawImage(nox.defaultImage, this.getWidth() / 2 - this.getWidth() / 8, this.getHeight() / 2 + this.getHeight() / 8, this.getWidth() / 4, this.getHeight() / 4, null);
             }
         }
 
