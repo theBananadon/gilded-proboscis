@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements Runnable{
     public boolean allowEscape = false;
     int[][] currentMap;
     Wall[] walls;
+    Floor[] floor;
     ObjectPrinter obj;
     Wall testWall;
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null, deathScreen = null, creditScreen = null;
@@ -347,12 +348,33 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
 
+        int totalFloors = 4 * 34 * 34;
+        floor = new Floor[totalFloors];
+        int floorCount = 0;
+        for(int i = 0; i < 2 * currentMap.length; i++){
+            for(int j = 0; j < 2 * currentMap.length; j++){
+                if(currentMap[i / 2][j / 2] != 0){
+                    int[] zValues = new int[4];
+                    java.awt.Point[] points = new java.awt.Point[4];
+
+                    points[0] = new java.awt.Point((TILE_SIZE / wallNumber) * i,12);
+                    points[1] = new java.awt.Point((TILE_SIZE / wallNumber) * (i + 1),12);
+                    points[2] = new java.awt.Point((TILE_SIZE / wallNumber) * (i + 1),12);
+                    points[3] = new java.awt.Point((TILE_SIZE / wallNumber) * i,12);
+                    zValues = new int[]{(TILE_SIZE / wallNumber) * j, (TILE_SIZE / wallNumber) * j, (TILE_SIZE / wallNumber) * (j + 1), (TILE_SIZE / wallNumber) * (j + 1)};
+                    floor[floorCount] = new Floor(this, points, zValues, (floorCount % 2 + i % 2) % 2);
+                    floorCount++;
+
+                }
+            }
+        }
 
 
 
-        java.awt.Point[] points = new java.awt.Point[]{new java.awt.Point(16,-10), new java.awt.Point(-0,-10), new java.awt.Point(-0, 10), new java.awt.Point(16, 10)};
-        int[] zValues = new int[]{30,30,30,30};
-        testWall = new Wall(this, points, zValues);
+
+//        java.awt.Point[] points = new java.awt.Point[]{new java.awt.Point(16,-10), new java.awt.Point(-0,-10), new java.awt.Point(-0, 10), new java.awt.Point(16, 10)};
+//        int[] zValues = new int[]{30,30,30,30};
+//        testWall = new Wall(this, points, zValues);
         int r = 0, s = 0;
         for(int i = 0; i < currentMap.length; i++){
             for(int j = 0; j < currentMap[0].length; j++){
@@ -471,6 +493,14 @@ Tasks to complete for George:
                 nox.update(player);
                 if(nox.calculateCentre(player).distance(0,0) < 50 + 100 * scaleConstant){
                     printableEntities.add(nox);
+                }
+            }
+
+            for(int i = 0; i < floor.length; i++){
+                if(floor[i] != null){
+                    if(floor[i].calculateCentre(player).distance(0,0) < 50 + 100 * scaleConstant){
+                        printableEntities.add(floor[i]);
+                    }
                 }
             }
 
