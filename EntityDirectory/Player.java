@@ -53,6 +53,7 @@ public class Player extends Entity {
 
 
             }
+
             if (turnRight) {
                 xAngle = (xAngle - Math.PI / 50) % (2 * Math.PI);
                 x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle - Math.PI / 50));
@@ -61,14 +62,30 @@ public class Player extends Entity {
             }
             if (turnLeft) {
                 xAngle = (xAngle + Math.PI / 50) % (2 * Math.PI);
-                x -= 20 * (- Math.sin(xAngle) + Math.sin(xAngle + Math.PI / 50));
-                z -= 20 * (Math.cos(xAngle) - Math.cos(xAngle + Math.PI / 50));
+                x += 20 * (- Math.sin(xAngle) + Math.sin(xAngle - Math.PI / 50));
+                z += 20 * (Math.cos(xAngle) - Math.cos(xAngle - Math.PI / 50));
             }
+            tileX = Math.max(0, Math.min((int) ((x + 20 * Math.sin(xAngle)) / gp.TILE_SIZE), 33));
+            tileZ = Math.max(0,Math.min((int) ((z + 20 * (1 - Math.cos(xAngle))) / gp.TILE_SIZE), 33));
+            if(map[tileX][tileZ] == 0){
+                //check 4 points around and set tileX/tileZ to that
+                if(map[Math.max(0,tileX-1)][tileZ] != 0){
+                    tileX = Math.max(0, tileX-1);
+                }
+                else if(map[Math.min(map.length - 1, tileX + 1)][tileZ] != 0){
+                    tileX = Math.min(map.length - 1, tileX + 1);
+                }
+                else if(map[tileX][Math.max(0,tileZ-1)] != 0){
+                    tileZ = Math.max(0, tileZ-1);
+                }
+                else if(map[tileX][Math.min(map.length - 1, tileZ + 1)] != 0){
+                    tileZ = Math.min(map.length - 1, tileZ + 1);
+                }
+            }
+            isTaskObjectBeingCollected(taskObjects);
+            isWorkingOnTask(tasks);
         }
-        isTaskObjectBeingCollected(taskObjects);
-        isWorkingOnTask(tasks);
-        tileX = (int) ((x) / gp.TILE_SIZE);
-        tileZ = (int) ((z) / gp.TILE_SIZE);
+
     }
 
     public boolean checkCollision(double xSpeed, double zSpeed){
