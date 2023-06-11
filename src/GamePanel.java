@@ -536,6 +536,12 @@ Tasks to complete for George:
         if(pauseState){
 
         }
+        if(loseState){
+            g2d.drawImage(deathScreen, 0,0, 864, 672, null);
+            if(nox != null){
+                g2d.drawImage(nox.defaultImage, 864 / 2 - 100, 672 / 2 + 75, 200, 200, null);
+            }
+        }
 
         // testWall.paint(g2d);
 
