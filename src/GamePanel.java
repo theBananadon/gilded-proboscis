@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class GamePanel extends JPanel implements Runnable{
@@ -18,10 +19,12 @@ public class GamePanel extends JPanel implements Runnable{
     int[][] currentMap;
     Wall[] walls;
     Floor[] floor;
+    Wall[] taskWalls;
     ObjectPrinter obj;
     Wall testWall;
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null, deathScreen = null, creditScreen = null;
     boolean isMap = false;
+    boolean isInventory = false;
     Tasks[] tasks = new Tasks[3];
     TaskObject[] taskObjects = new TaskObject[3];
     BufferedImage[] taskImages = new BufferedImage[3];
@@ -75,11 +78,11 @@ public class GamePanel extends JPanel implements Runnable{
                         playState = false;
                         pauseState = true;
                     }
-                    if(e.getKeyCode() == KeyEvent.VK_M){
+                    if(e.getKeyCode() == KeyEvent.VK_M && !isInventory){
                         isMap = true;
                     }
-                    if(e.getKeyCode() == KeyEvent.VK_I){
-                        //insert Inventory method call
+                    if(e.getKeyCode() == KeyEvent.VK_I && !isMap){
+                        isInventory = true;
                     }
                     if(e.getKeyCode() == KeyEvent.VK_E){
                         player.isWorkingOnTask = true;
@@ -167,6 +170,9 @@ public class GamePanel extends JPanel implements Runnable{
                     if(e.getKeyCode() == KeyEvent.VK_M){
                         isMap = false;
                     }
+                    if(e.getKeyCode() == KeyEvent.VK_I){
+                        isInventory = false;
+                    }
                     if(e.getKeyCode() == KeyEvent.VK_SPACE && !flashLightToggle){
                         flashLightToggle = true;
                     }
@@ -191,14 +197,27 @@ public class GamePanel extends JPanel implements Runnable{
 //            currentMap = makeMap();
 //        }
 
+        tasks = new Tasks[3];
+        int[] taskXTile = new int[tasks.length];
+        int[] taskZTile = new int[tasks.length];
+        int taskCount = 0;
         int totalWalls = 0;
         for(int i = 0; i < currentMap.length; i++){
             for(int j = 0; j < currentMap[i].length; j++){
                 if(currentMap[i][j] == 0){
                     totalWalls += 4;
                 }
+                if(currentMap[i][j] == 9){
+                    taskXTile[taskCount] = i;
+                    taskZTile[taskCount] = j;
+                    taskCount++;
+                }
 
             }
+        }
+
+        for(int i = 0; i < tasks.length; i++){
+            tasks[i] = new Tasks(this, taskXTile[i], 0, taskZTile[i]);
         }
 
 
@@ -372,6 +391,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 
+
+
+
 //        java.awt.Point[] points = new java.awt.Point[]{new java.awt.Point(16,-10), new java.awt.Point(-0,-10), new java.awt.Point(-0, 10), new java.awt.Point(16, 10)};
 //        int[] zValues = new int[]{30,30,30,30};
 //        testWall = new Wall(this, points, zValues);
@@ -504,6 +526,13 @@ Tasks to complete for George:
                 }
             }
 
+            for(int i = 0; i < tasks.length; i++){
+                if(tasks[i] != null){
+                    if(tasks[i].calculateCentre2(player).distance(0,0) < 50 + 100 * scaleConstant){
+                        printableEntities.addAll(Arrays.asList(tasks[i].taskWalls));
+                    }
+                }
+            }
 
             Entity[] printedStuff = new Entity[printableEntities.size()];
             printableEntities.toArray(printedStuff);
@@ -558,7 +587,7 @@ Tasks to complete for George:
                             g2d.setColor(Color.WHITE);
                             g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
                         }
-                        if (currentMap[i][j] != 0 && currentMap[i][j] != 7) {
+                        if (currentMap[i][j] != 0) {
                             int alpha = 240;
                             Color transparency = new Color(0,0,0,alpha);
                             g2d.setColor(transparency);
@@ -572,6 +601,10 @@ Tasks to complete for George:
                             Color keyInvisibility = new Color(0,0,0,alpha);
                             g2d.setColor(keyInvisibility);
                             g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                        }
+                        if(currentMap[i][j] == 9){
+                            g2d.setColor(Color.pink);
+                            g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
                         }
 
 
@@ -596,6 +629,44 @@ Tasks to complete for George:
                 g2d.setColor(Color.GREEN);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.fillRect(16 * nox.tileX + 160, 16 * nox.tileZ + 64, 16, 16);
+
+
+
+
+            }
+
+            if(isInventory){
+                int width = 3 * this.getWidth() / 4 - 40;
+                int height = 4 * getHeight() / 5 - 32;
+                g2d.setColor(Color.black);
+                g2d.fillRoundRect(this.getWidth() / 8, this.getHeight() / 10, 3 * this.getWidth() / 4, 4 * getHeight() / 5, 20, 20);
+                g2d.setColor(Color.gray);
+                g2d.fillRoundRect(this.getWidth() / 8 + 20, this.getHeight() / 10 + 16, width, height, 20, 20);
+                for(int i = 0; i < taskObjects.length; i++){
+                    if(taskObjects[i] == null){
+                        g2d.setColor(Color.GREEN);
+                    } else {
+                        g2d.setColor(Color.RED);
+                    }
+
+                    g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + height / 5, width / 7, height / 5, 15,15);
+                    if(taskImages[i] != null) {
+                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                    }
+                }
+
+                for(int i = 0; i < tasks.length; i++){
+                    if(tasks[i].isCompleted){
+                        g2d.setColor(Color.GREEN);
+                    } else {
+                        g2d.setColor(Color.RED);
+                    }
+
+                    g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + 3 * height / 5, width / 7, height / 5, 15,15);
+                    if(taskImages[i] != null) {
+                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + 2 * height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                    }
+                }
 
 
             }
@@ -884,6 +955,11 @@ Tasks to complete for George:
                     z = (int) (Math.random() * 32);
                 }
                 mapMapMap[v][z] = 7;
+
+                v = (int) (Math.random() * (roomsize - 2)) +  x + 1;
+                z = (int) (Math.random() * (roomsize - 2)) +  y + 1;
+
+                mapMapMap[v][z] = 9;
 
 
 

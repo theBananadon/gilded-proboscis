@@ -59,6 +59,9 @@ public class ObjectPrinter {
             double max = Math.max(0, Math.min(200 * (50 + 100 * scaleConstant - dis.distance(0,0))/ 200.0, 255));
             if(entity instanceof Wall) {
                 g2d.setColor(new Color((int) (max), (int) (max), (int) max));
+                if(entity.colorIdentity == 2){
+                    g2d.setColor(new Color(0, (int) (max), (int) max));
+                }
                 g2d.fillPolygon(xPoints, yPoints, 4);
             }
 
@@ -83,6 +86,7 @@ public class ObjectPrinter {
                     g2d.fillPolygon(xPoints, yPoints, 4);
                 }
             }
+
 
         }
     }

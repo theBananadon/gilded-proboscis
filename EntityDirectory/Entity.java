@@ -10,6 +10,7 @@ public class Entity {
     public double z;
     int tileX = 0; int tileZ = 0;
     public BufferedImage defaultImage;
+    int colorIdentity;
 
 
     public Entity(GamePanel gp, double x, double y, double z){
@@ -39,6 +40,10 @@ public class Entity {
         }
 
         return new Point((int) xAvg, (int) zAvg);
+    }
+
+    public Point calculateCentre2(Player player){
+        return new Point((int) (gp.TILE_SIZE * x - player.x), (int) (gp.TILE_SIZE * z - player.z));
     }
 
 

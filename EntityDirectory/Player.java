@@ -91,7 +91,7 @@ public class Player extends Entity {
     public boolean checkCollision(double xSpeed, double zSpeed){
         int finalTileX = (int) ((x + xSpeed) / gp.TILE_SIZE);
         int finalTileZ = (int) ((z + zSpeed) / gp.TILE_SIZE);
-        return map[finalTileX][finalTileZ] != 0;
+        return map[finalTileX][finalTileZ] != 0 && map[finalTileX][finalTileZ] != 9;
     }
 
     public void updateAxis(){
