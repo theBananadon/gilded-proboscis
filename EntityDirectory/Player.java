@@ -114,7 +114,7 @@ public class Player extends Entity {
     public void isWorkingOnTask(Tasks[] tasks) {
         for(int i = 0; i < tasks.length; i++) {
             if(tasks[i] != null) {
-                if (tasks[i].tileX == tileX && tasks[i].tileZ == tileZ && isWorkingOnTask) {
+                if (Math.abs(tasks[i].tileX - tileX) <= 2  && (tasks[i].tileZ - tileZ) <= 2  && isWorkingOnTask) {
                     taskTime++;
                     if (taskTime >= 150) {
                         tasks[i].isCompleted = true;

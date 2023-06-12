@@ -30,7 +30,7 @@ public class GamePanel extends JPanel implements Runnable{
     BufferedImage[] taskImages = new BufferedImage[3];
     boolean isFlashLightOn = false;
     boolean flashLightToggle = true;
-    double flashLightBattery = 25;
+    double flashLightBattery = 10;
     double chargingBattery = 0;
     Noctis nox;
 
@@ -100,7 +100,7 @@ public class GamePanel extends JPanel implements Runnable{
                             chargingBattery += 1.0 / 30;
                         }
                         if(chargingBattery >= 2){
-                            flashLightBattery = 25;
+                            flashLightBattery = 10;
                             chargingBattery = 0;
                         }
                     }
@@ -175,6 +175,9 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                     if(e.getKeyCode() == KeyEvent.VK_SPACE && !flashLightToggle){
                         flashLightToggle = true;
+                    }
+                    if(e.getKeyCode() == KeyEvent.VK_E){
+                        player.isWorkingOnTask = false;
                     }
                 }
                 if(pauseState){
@@ -555,15 +558,15 @@ Tasks to complete for George:
             g2d.setColor(Color.BLACK);
             g2d.fillRect(619,45,175,60);
             g2d.setColor(Color.WHITE);
-            if(flashLightBattery <= 5){
+            if(flashLightBattery <= 2){
                 g2d.setColor(Color.red);
             }
 
             if(flashLightBattery > 0) {
                 Polygon polygon = new Polygon(new int[]{624, 656, 641, 624}, new int[]{50,50,100,100}, 4);
                 g2d.fillPolygon(polygon);
-                for (int i = 0; i < flashLightBattery / 5 - 1; i++) {
-                    if(i+1 < flashLightBattery / 5 - 1 || flashLightBattery < 20) {
+                for (int i = 0; i < flashLightBattery / 2 - 1; i++) {
+                    if(i+1 < flashLightBattery / 2 - 1 || flashLightBattery < 8) {
                         Polygon extraPolygon = new Polygon(new int[]{656 + 5 * (i + 1) + 32 * i, 656 + 5 * (i + 1) + 32 * (i + 1), 656 + 5 * (i + 1) + 32 * (i + 1) - 15, 656 + 5 * (i + 1) + 32 * i - 15}, new int[]{50, 50, 100, 100}, 4);
                         g2d.fillPolygon(extraPolygon);
                     } else {
