@@ -130,13 +130,13 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                 }
 
-            if(winState || loseState){
-                if(e.getKeyCode() == KeyEvent.VK_SPACE){
-                    winState = false;
-                    loseState = false;
-                    startState = true;
+                if(winState || loseState){
+                    if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                        winState = false;
+                        loseState = false;
+                        startState = true;
+                    }
                 }
-            }
 
             }
 
@@ -434,7 +434,7 @@ public class GamePanel extends JPanel implements Runnable{
 //            }
 //        }
 
-        nox = new Noctis(5, 0.5, 1, x * TILE_SIZE, z * TILE_SIZE, 5, this, "null");
+        nox = new Noctis(5, 0.25, 1, x * TILE_SIZE, z * TILE_SIZE, 5, this, "null");
 
 /*
 Editor note 1 for wall creation (Burhanuddin)
@@ -475,6 +475,8 @@ Tasks to complete for George:
             deathScreen = ImageIO.read(new File("images\\defeatscreen.png"));
             creditScreen = ImageIO.read(new File("images\\creditscreen.png"));
             taskImages[0] = ImageIO.read(new File("images\\wrench.png"));
+            taskImages[1] = ImageIO.read(new File("images\\wires.png"));
+            taskImages[2] = ImageIO.read(new File("images\\wire_cutters.png"));
         }catch(NullPointerException | IOException e){
             e.printStackTrace();
         }
@@ -577,7 +579,19 @@ Tasks to complete for George:
                 }
             }
 
-
+            for(int i = 0; i < tasks.length; i++){
+                if(tasks[i].isNearPlayer() && (!player.isWorkingOnTask || taskObjects[i] != null)){
+                    g2d.setColor(Color.GREEN);
+                    if(taskObjects[i] != null){
+                        g2d.setColor(Color.red);
+                    }
+                    g2d.fillRoundRect(3 * this.getWidth() / 8, 7 * this.getHeight() / 8, this.getHeight() / 10, this.getHeight() / 10, 5, 5);
+                    g2d.drawImage(taskImages[i],3 * this.getWidth() / 8 + 5, 7 * this.getHeight() / 8 + 5,  this.getHeight() / 10 - 10, this.getHeight() / 10 - 10, null );
+                } else if(tasks[i].isNearPlayer() && player.isWorkingOnTask && taskObjects[i] == null){
+                    g2d.setColor(Color.BLUE);
+                    g2d.fillRoundRect(3 * this.getWidth() / 8, 7 * this.getHeight() / 8, this.getHeight() / 10, this.getHeight() / 10, 5, 5);
+                }
+            }
 
             if (isMap)
             {
@@ -588,13 +602,13 @@ Tasks to complete for George:
                         //Drew Main Room, Tasks Room, Floor Panels + Wall
                         if (currentMap[i][j] == 0) {
                             g2d.setColor(Color.WHITE);
-                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                            g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
                         }
                         if (currentMap[i][j] != 0) {
                             int alpha = 240;
                             Color transparency = new Color(0,0,0,alpha);
                             g2d.setColor(transparency);
-                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                            g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
                         }
                         if (currentMap[i][j] == 8) {
                             int alpha = 240;
@@ -603,7 +617,7 @@ Tasks to complete for George:
                             }
                             Color keyInvisibility = new Color(0,0,0,alpha);
                             g2d.setColor(keyInvisibility);
-                            g2d.fillRect(16 * i + 160, 16 * j + 64, 16, 16);
+                            g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
                         }
                         if(currentMap[i][j] == 9){
                             g2d.setColor(Color.pink);
@@ -617,22 +631,19 @@ Tasks to complete for George:
 
                 for(int i = 0; i < taskObjects.length; i++){
                     if(taskObjects[i] != null){
-                        if (currentMap[taskObjects[i].tileX][taskObjects[i].tileZ] == 7) {
-                            g2d.setColor(Color.RED);
-                            g2d.fillRect(16 * taskObjects[i].tileX + 160, 16 * taskObjects[i].tileZ + 64, 16, 16);
-                        }
+                        g2d.setColor(Color.RED);
+                        g2d.fillRect(16 * taskObjects[i].tileX + (this.getWidth() - 16 * 34) / 2, 16 * taskObjects[i].tileZ + (this.getHeight() - 16 * 34) / 2, 16, 16);
                     }
                 }
 
 
                 g2d.setColor(Color.BLUE);
                 g2d.setStroke(new BasicStroke(2));
-                g2d.fillRect(16 * player.tileX + 160, 16 * player.tileZ + 64, 16, 16);
+                g2d.fillRect(16 * player.tileX + (this.getWidth() - 16 * 34) / 2, 16 * player.tileZ + (this.getHeight() - 16 * 34) / 2, 16, 16);
 
                 g2d.setColor(Color.GREEN);
                 g2d.setStroke(new BasicStroke(2));
-                g2d.fillRect(16 * nox.tileX + 160, 16 * nox.tileZ + 64, 16, 16);
-
+                g2d.fillRect(16 * nox.tileX + (this.getWidth() - 16 * 34) / 2, 16 * nox.tileZ + (this.getHeight() - 16 * 34) / 2, 16, 16);
 
 
 
@@ -667,7 +678,7 @@ Tasks to complete for George:
 
                     g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + 3 * height / 5, width / 7, height / 5, 15,15);
                     if(taskImages[i] != null) {
-                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + 2 * height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + 3 * height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
                     }
                 }
 
@@ -795,7 +806,14 @@ Tasks to complete for George:
                 }
             }
             checkLosing();
+            nox.speed = 0.25;
+            for(int i = 0; i < taskObjects.length; i++){
+                if(taskObjects[i] == null){
+                    nox.speed += 0.25;
+                }
+            }
         }
+
 
     }
 

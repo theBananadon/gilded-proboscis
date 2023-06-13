@@ -5,6 +5,8 @@ public class Tasks extends Entity{
     Wall[] taskWalls;
     public Tasks(GamePanel gp,double x, double y, double z) {
         super(gp, x, y, z);
+        this.tileX = (int) (x / gp.TILE_SIZE);
+        this.tileZ = (int) (z / gp.TILE_SIZE);
         createWall();
     }
 
@@ -52,6 +54,11 @@ public class Tasks extends Entity{
         taskWalls[3].colorIdentity = 2;
         points = points1;
         distance = zValues1;
+
+    }
+
+    public boolean isNearPlayer(){
+        return Math.abs(x - gp.player.tileX) <= 1.5 && Math.abs(z - gp.player.tileZ) <= 1.5;
 
     }
 

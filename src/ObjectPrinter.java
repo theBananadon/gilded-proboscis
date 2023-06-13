@@ -78,8 +78,8 @@ public class ObjectPrinter {
                     }
                 }
                 if(!isGonnaCauseCancer) {
-                    if(((Floor) entity).colorIdentity == 0){
-                        g2d.setColor(new Color((int)  (max), (int) max, (int) max));
+                    if(entity.colorIdentity == 0){
+                        g2d.setColor(new Color((int) (max), (int) max, (int) max));
                     } else {
                         g2d.setColor(Color.BLACK);
                     }

@@ -124,6 +124,7 @@ class Noctis extends Monster {
     public void move() {
         tileX = (int)(x / gp.TILE_SIZE);
         tileZ = (int) (z / gp.TILE_SIZE);
+
         int[][] map = gp.currentMap;
 
         node = new Node[map.length][map.length];
