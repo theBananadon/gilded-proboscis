@@ -23,10 +23,13 @@ public class GamePanel extends JPanel implements Runnable{
     ObjectPrinter obj;
     Wall testWall;
     public BufferedImage startScreen = null, victoryScreen1 = null, victoryScreen2 = null, deathScreen = null, creditScreen = null;
+    public BufferedImage flashLight = null, keySprite = null;
     boolean isMap = false;
     boolean isInventory = false;
+    boolean keyCollected = false;
     Tasks[] tasks = new Tasks[3];
     TaskObject[] taskObjects = new TaskObject[3];
+    TaskObject Key;
     BufferedImage[] taskImages = new BufferedImage[3];
     boolean isFlashLightOn = false;
     boolean flashLightToggle = true;
@@ -196,9 +199,13 @@ public class GamePanel extends JPanel implements Runnable{
 
 
         currentMap = makeMap();
-//        while(!mapChecker(currentMap)){
-//            currentMap = makeMap();
-//        }
+        while(!mapChecker(currentMap)){
+            currentMap = makeMap();
+        }
+        /*
+        Create horror sound location - (will do - bur)
+         */
+
 
         tasks = new Tasks[3];
         int[] taskXTile = new int[tasks.length];
@@ -436,6 +443,9 @@ public class GamePanel extends JPanel implements Runnable{
 
         nox = new Noctis(5, 0.25, 1, x * TILE_SIZE, z * TILE_SIZE, 5, this, "null");
 
+
+
+
 /*
 Editor note 1 for wall creation (Burhanuddin)
 yeah i have no clue what the hell is going on
@@ -460,6 +470,25 @@ Tasks to complete for George:
  */
     }
 
+    private boolean checkExit(){
+        for(int i = 0; i < currentMap.length; i++){
+            if(currentMap[i][0] == 1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void createKey(){
+        for(int i = 0; i < currentMap.length; i++){
+            for(int j = 0; j < currentMap.length; j++){
+                if(currentMap[i][j] == 8){
+                    Key = new TaskObject(this, TILE_SIZE * i + TILE_SIZE / 2, 0,TILE_SIZE * j + TILE_SIZE / 2, keySprite);
+                }
+            }
+        }
+    }
+
     private void checkLosing() {
         if(Math.abs(player.x - nox.x) <= 1 && Math.abs(player.z - nox.z) <= 1 ){
             playState = false;
@@ -477,6 +506,8 @@ Tasks to complete for George:
             taskImages[0] = ImageIO.read(new File("images\\wrench.png"));
             taskImages[1] = ImageIO.read(new File("images\\wires.png"));
             taskImages[2] = ImageIO.read(new File("images\\wire_cutters.png"));
+            flashLight = ImageIO.read(new File("images\\flashlight.png"));
+            keySprite = ImageIO.read(new File("images\\key.png"));
         }catch(NullPointerException | IOException e){
             e.printStackTrace();
         }
@@ -488,10 +519,25 @@ Tasks to complete for George:
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
 
+
+
         if(startState){
             g2d.drawImage(startScreen, 0,0,this.getWidth(),this.getHeight(), null);
         }
         if(playState || pauseState){
+            if(allTasksCompleted() && Key == null && !keyCollected){
+                createKey();
+            }
+            if(keyCollected){
+                Key = null;
+                if(!checkExit()){
+                    int v = 0;
+                    while(currentMap[v][1] == 0){
+                        v = (int) (Math.random() * 32);
+                    }
+                    currentMap[v][0] = 1;
+                }
+            }
 
             int scaleConstant = 0;
             if(isFlashLightOn){
@@ -539,6 +585,11 @@ Tasks to complete for George:
                 }
             }
 
+            if(Key != null){
+                Key.updateImage();
+                printableEntities.add(Key);
+            }
+
             Entity[] printedStuff = new Entity[printableEntities.size()];
             printableEntities.toArray(printedStuff);
             if(printedStuff.length > 0) {
@@ -551,6 +602,8 @@ Tasks to complete for George:
                 }
                 ObjectPrinter.paint(g2d, printedStuff[i]);
             }
+
+
 
 //            ObjectPrinter.paint(g2d, testWall);
 
@@ -580,18 +633,27 @@ Tasks to complete for George:
             }
 
             for(int i = 0; i < tasks.length; i++){
-                if(tasks[i].isNearPlayer() && (!player.isWorkingOnTask || taskObjects[i] != null)){
+                if(tasks[i].isNearPlayer() && (!player.isWorkingOnTask || taskObjects[i] != null) && !tasks[i].isCompleted){
                     g2d.setColor(Color.GREEN);
                     if(taskObjects[i] != null){
                         g2d.setColor(Color.red);
                     }
                     g2d.fillRoundRect(3 * this.getWidth() / 8, 7 * this.getHeight() / 8, this.getHeight() / 10, this.getHeight() / 10, 5, 5);
                     g2d.drawImage(taskImages[i],3 * this.getWidth() / 8 + 5, 7 * this.getHeight() / 8 + 5,  this.getHeight() / 10 - 10, this.getHeight() / 10 - 10, null );
-                } else if(tasks[i].isNearPlayer() && player.isWorkingOnTask && taskObjects[i] == null){
+                } else if(tasks[i].isNearPlayer() && player.isWorkingOnTask && taskObjects[i] == null && !tasks[i].isCompleted){
                     g2d.setColor(Color.BLUE);
                     g2d.fillRoundRect(3 * this.getWidth() / 8, 7 * this.getHeight() / 8, this.getHeight() / 10, this.getHeight() / 10, 5, 5);
+                } else if(tasks[i].isNearPlayer() && tasks[i].isCompleted){
+                    g2d.setColor(Color.GREEN);
+                    g2d.fillRoundRect(3 * this.getWidth() / 8, 7 * this.getHeight() / 8, this.getHeight() / 10, this.getHeight() / 10, 5, 5);
+
                 }
             }
+            if(isFlashLightOn) {
+                g2d.drawImage(flashLight, 4 * this.getWidth() / 5, 3 * this.getHeight() / 4, this.getHeight() / 4, this.getHeight() / 2, null);
+            }
+
+
 
             if (isMap)
             {
@@ -619,12 +681,6 @@ Tasks to complete for George:
                             g2d.setColor(keyInvisibility);
                             g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
                         }
-                        if(currentMap[i][j] == 9){
-                            g2d.setColor(Color.pink);
-                            g2d.fillRect(16 * i + (this.getWidth() - 16 * 34) / 2, 16 * j + (this.getHeight() - 16 * 34) / 2, 16, 16);
-                        }
-
-
 
                     }
                 }
@@ -634,6 +690,18 @@ Tasks to complete for George:
                         g2d.setColor(Color.RED);
                         g2d.fillRect(16 * taskObjects[i].tileX + (this.getWidth() - 16 * 34) / 2, 16 * taskObjects[i].tileZ + (this.getHeight() - 16 * 34) / 2, 16, 16);
                     }
+                }
+                for(int i = 0; i < tasks.length; i++){
+                    if(!tasks[i].isCompleted){
+                        g2d.setColor(Color.pink);
+                        g2d.fillRect((int) (16 * tasks[i].x + (this.getWidth() - 16 * 34) / 2), (int) (16 * tasks[i].z + (this.getHeight() - 16 * 34) / 2), 16, 16);
+                    }
+                }
+
+                if(allTasksCompleted() && Key != null){
+                    g2d.setColor(Color.YELLOW);
+                    g2d.fillRect((int) (16 * Key.tileX + (this.getWidth() - 16 * 34) / 2), (int) (16 * Key.tileZ + (this.getHeight() - 16 * 34) / 2), 16, 16);
+
                 }
 
 
@@ -656,32 +724,45 @@ Tasks to complete for George:
                 g2d.fillRoundRect(this.getWidth() / 8, this.getHeight() / 10, 3 * this.getWidth() / 4, 4 * getHeight() / 5, 20, 20);
                 g2d.setColor(Color.gray);
                 g2d.fillRoundRect(this.getWidth() / 8 + 20, this.getHeight() / 10 + 16, width, height, 20, 20);
-                for(int i = 0; i < taskObjects.length; i++){
-                    if(taskObjects[i] == null){
+                if(!allTasksCompleted()) {
+
+                    for (int i = 0; i < taskObjects.length; i++) {
+                        if (taskObjects[i] == null) {
+                            g2d.setColor(Color.GREEN);
+                        } else {
+                            g2d.setColor(Color.RED);
+                        }
+
+                        g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + height / 5, width / 7, height / 5, 15, 15);
+                        if (taskImages[i] != null) {
+                            g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                        }
+                    }
+
+                    for (int i = 0; i < tasks.length; i++) {
+                        if (tasks[i].isCompleted) {
+                            g2d.setColor(Color.GREEN);
+                        } else {
+                            g2d.setColor(Color.RED);
+                        }
+
+                        g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + 3 * height / 5, width / 7, height / 5, 15, 15);
+                        if (taskImages[i] != null) {
+                            g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + 3 * height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                        }
+                    }
+                } else {
+                    if (Key == null) {
                         g2d.setColor(Color.GREEN);
                     } else {
                         g2d.setColor(Color.RED);
                     }
 
-                    g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + height / 5, width / 7, height / 5, 15,15);
-                    if(taskImages[i] != null) {
-                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
+                    g2d.fillRoundRect(this.getWidth() / 8 + 20 + 4 * width / 14, this.getHeight() / 10 + 16 + height / 5, 3 * width / 7, 3 * height / 5, 15, 15);
+                    if (keySprite != null) {
+                        g2d.drawImage(keySprite, this.getWidth() / 8 + 20 + 4 * width / 14 + 10, this.getHeight() / 10 + 16 + height / 5 + 10, 3 * width / 7 - 20, 3 * height / 5 - 20, null);
                     }
                 }
-
-                for(int i = 0; i < tasks.length; i++){
-                    if(tasks[i].isCompleted){
-                        g2d.setColor(Color.GREEN);
-                    } else {
-                        g2d.setColor(Color.RED);
-                    }
-
-                    g2d.fillRoundRect(this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7, this.getHeight() / 10 + 16 + 3 * height / 5, width / 7, height / 5, 15,15);
-                    if(taskImages[i] != null) {
-                        g2d.drawImage(taskImages[i], this.getWidth() / 8 + 20 + (2 * i + 1) * width / 7 + 10, this.getHeight() / 10 + 16 + 3 * height / 5 + 10, width / 7 - 20, height / 5 - 20, null);
-                    }
-                }
-
 
             }
 
@@ -695,12 +776,24 @@ Tasks to complete for George:
                 g2d.drawImage(nox.defaultImage, this.getWidth() / 2 - this.getWidth() / 8, this.getHeight() / 2 + this.getHeight() / 8, this.getWidth() / 4, this.getHeight() / 4, null);
             }
         }
+        for(int i = 0; i < tasks.length; i++){
+
+        }
 
         // testWall.paint(g2d);
 
         g2d.dispose();
 
 
+    }
+
+    private boolean allTasksCompleted() {
+        for(int i = 0; i < tasks.length; i++){
+            if(!tasks[i].isCompleted){
+                return  false;
+            }
+        }
+        return true;
     }
 
     public void quickSort(Entity[] arr)
@@ -797,7 +890,7 @@ Tasks to complete for George:
 
     public void update(){
         if(playState) {
-            player.updatePlayer(tasks, taskObjects);
+            player.updatePlayer(tasks, taskObjects, Key);
             if(isFlashLightOn){
                 if(flashLightBattery > 0) {
                     flashLightBattery -= 1 / 30.0;
@@ -812,6 +905,10 @@ Tasks to complete for George:
                     nox.speed += 0.25;
                 }
             }
+            if(player.tileZ == 0 && keyCollected && currentMap[player.tileX][player.tileZ] == 1){
+                winState = true;
+                playState = false;
+            }
         }
 
 
@@ -819,8 +916,8 @@ Tasks to complete for George:
 
     public boolean mapChecker(int[][] maze2) {
 
-        for (int i = 0; i < 32; i++) {
-            if (maze2[i][0] == 1) {
+        for (int i = 0; i < 34; i++) {
+            if (maze2[i][1] == 1) {
                 return true;
             }
         }
@@ -1006,6 +1103,8 @@ Tasks to complete for George:
         }
         mapMapMap[v][z] = 10;
 
+        v = 0;
+        mapMapMap[v][0] = 1;
         for (int i = 1; i < 33; i++) { //top wall
             for (int j = 1; j < 33; j++) {
                 mapMap[i][j] = mapMapMap[i-1][j-1];

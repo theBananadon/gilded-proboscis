@@ -1,3 +1,5 @@
+import java.awt.*;
+import java.security.Key;
 import java.util.ArrayList;
 
 public class Player extends Entity {
@@ -9,19 +11,20 @@ public class Player extends Entity {
     double[] normal = new double[]{Math.cos(xAngle + Math.PI / 2), 0, Math.sin(xAngle + Math.PI / 2)};
     boolean right = false, left = false, forward = false, backward = false;
     boolean turnRight = false, turnLeft = false, turnUp = false, turnDown = false;
+    boolean isNearTask = false;
     boolean isWorkingOnTask = false;
 
     boolean[] taskObjectCollection = new boolean[3];
     boolean[] taskCompletion = new boolean[3];
     boolean isKeyCollected = false;
-    int taskTime = 0;
+    int taskTime[] = {0,0,0};
 
     public Player(GamePanel gp, double x, double y, double z, int[][] map) {
         super(gp, x, y, z);
         this.map = map;
     }
 
-    public void updatePlayer(Tasks[] tasks, TaskObject[] taskObjects){
+    public void updatePlayer(Tasks[] tasks, TaskObject[] taskObjects, Entity key){
         if(gp.playState) {
             updateAxis();
             if (forward) {
@@ -82,7 +85,7 @@ public class Player extends Entity {
                     tileZ = Math.min(map.length - 1, tileZ + 1);
                 }
             }
-            isTaskObjectBeingCollected(taskObjects);
+            isTaskObjectBeingCollected(taskObjects, key);
             isWorkingOnTask(tasks);
         }
 
@@ -100,7 +103,7 @@ public class Player extends Entity {
         normal = new double[]{Math.cos(xAngle + Math.PI / 2), 0, Math.sin(xAngle + Math.PI / 2)};
     }
 
-    public void isTaskObjectBeingCollected(TaskObject[] taskObjects){
+    public void isTaskObjectBeingCollected(TaskObject[] taskObjects, Entity key){
         for(int i = 0; i < taskObjects.length; i++){
             if(taskObjects[i] != null){
                 if(checkCollision(taskObjects[i])){
@@ -109,18 +112,25 @@ public class Player extends Entity {
                 }
             }
         }
+        if(key != null){
+            if(checkCollision(key)){
+                System.out.println("why you not like this");
+                key = null;
+                gp.keyCollected = true;
+            }
+        }
     }
 
     public void isWorkingOnTask(Tasks[] tasks) {
         for(int i = 0; i < tasks.length; i++) {
             if(tasks[i] != null) {
-                if (Math.abs(tasks[i].tileX - tileX) <= 2  && (tasks[i].tileZ - tileZ) <= 2  && isWorkingOnTask) {
-                    taskTime++;
-                    if (taskTime >= 150) {
+                if (tasks[i].isNearPlayer()  && isWorkingOnTask && gp.taskObjects[i] == null && !tasks[i].isCompleted) {
+                    taskTime[i]++;
+                    if (taskTime[i] >= 150) {
                         tasks[i].isCompleted = true;
                     }
                 } else {
-                    taskTime = 0;
+                    taskTime[i] = 0;
                 }
             }
         }
